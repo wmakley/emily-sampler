@@ -1,18 +1,18 @@
-# 1. Initial Setup!
+# Hello World's for learners to play with.
 
-## Mac
+## 1. Initial Setup: Mac
 
 ### a. Install Compilers
 
 1. Install XCode from the App Store.
 2. Launch XCode, and click "Install" if it asks you to install additional software.
 
-### b. Install Homebrew (Required for JavaScript and advanced Ruby/Python)
+### b. Install Homebrew
 
 1. Install [homebrew](https://brew.sh/).
 2. Open a Terminal window.
 3. Run `brew update`. (This could take a very long time if you haven't done it in a while.)
-4. Run `brew doctor` just to make sure it's all good!
+4. Run `brew doctor`. Fix anything it tells you to.
 
 ## 2. Get the code!
 
