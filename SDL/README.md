@@ -11,3 +11,5 @@ It's a WIP.
 
     ./compile.sh
     ./sdl_main
+
+Image and code credit https://www.willusher.io/pages/sdl2/
