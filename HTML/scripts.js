@@ -1,3 +1,4 @@
 document.addEventListener("DOMContentLoaded", function () {
-    document.getElementById("subtitle").innerText = "I was added by code!";
+    const subtitle = document.getElementById("subtitle");
+    subtitle.innerText = "I was added by code!";
 });
