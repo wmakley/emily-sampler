@@ -5,6 +5,7 @@ How to compile and run:
     g++ -o hello_world hello_world.c
     ./hello_world
 
-## Further Reading?
+## Further Reading
 
-I can't find any good intros at the moment.
+* http://www.cplusplus.com/doc/tutorial/
+  This is what I learned on, but it may not be up to date anymore!
