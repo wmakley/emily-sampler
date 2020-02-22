@@ -1,1 +1,1 @@
-// WIP
+console.log("Hello, World!");
