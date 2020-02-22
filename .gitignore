@@ -1,0 +1,6 @@
+._*
+Thumbs.db
+
+# Built binaries
+hello_world
+*.o
