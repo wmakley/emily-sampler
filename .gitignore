@@ -3,6 +3,7 @@ Thumbs.db
 
 # Built binaries
 hello_world
+sdl_main
 *.o
 
 # Packages

@@ -1,0 +1,13 @@
+# SDL Hello World
+
+This nasty-looking C program puts an image on the screen!
+It's a WIP.
+
+## Setup
+
+    brew install sdl2
+
+## Compile and Run
+
+    ./compile.sh
+    ./sdl_main
