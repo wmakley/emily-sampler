@@ -2,6 +2,8 @@
 
 ## 1. Initial Setup: Mac
 
+Only needed if you want to learn C or C++.
+
 ### a. Install Compilers
 
 1. Install XCode from the App Store.
@@ -21,6 +23,11 @@
 3. Download [Github Desktop](https://desktop.github.com/).
 4. Clone your copy!
 
-## 3. What to do?
+## 3. Recommended Text Editors
 
-I recommend: https://projecteuler.net/
+* [Visual Studio Code](https://code.visualstudio.com/)
+* [Sublime Text](https://www.sublimetext.com/)
+
+## 4. Recommended Projects
+
+If you have no idea what to work on, try Project Euler: https://projecteuler.net/
