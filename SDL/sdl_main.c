@@ -3,20 +3,23 @@
 #include <SDL2/SDL.h>
 
 int main(int argc, const char **argv) {
+    const int WINDOW_WIDTH = 640;
+    const int WINDOW_HEIGHT = 480;
+
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
         printf("SDL_Init Error: %s\n", SDL_GetError());
         return 1;
     }
 
-    SDL_Window *win = SDL_CreateWindow("Hello World!", 100, 100, 640, 480, SDL_WINDOW_SHOWN);
+    SDL_Window *win = SDL_CreateWindow("Hello World!", 100, 100, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_SHOWN);
     if (win == NULL) {
         printf("SDL_CreateWindow Error: %s\n", SDL_GetError());
         SDL_Quit();
         return 1;
     }
 
-    SDL_Renderer *ren = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-    if (ren == NULL) {
+    SDL_Renderer *renderer = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+    if (renderer == NULL) {
         SDL_DestroyWindow(win);
         printf("SDL_CreateRenderer Error: %s\n", SDL_GetError());
         SDL_Quit();
@@ -26,17 +29,17 @@ int main(int argc, const char **argv) {
     const char *imagePath = "hello.bmp";
     SDL_Surface *bmp = SDL_LoadBMP(imagePath);
     if (bmp == NULL) {
-        SDL_DestroyRenderer(ren);
+        SDL_DestroyRenderer(renderer);
         SDL_DestroyWindow(win);
         printf("SDL_LoadBMP Error: %s\n", SDL_GetError());
         SDL_Quit();
         return 1;
     }
 
-    SDL_Texture *tex = SDL_CreateTextureFromSurface(ren, bmp);
+    SDL_Texture *tex = SDL_CreateTextureFromSurface(renderer, bmp);
     SDL_FreeSurface(bmp);
     if (tex == NULL) {
-        SDL_DestroyRenderer(ren);
+        SDL_DestroyRenderer(renderer);
         SDL_DestroyWindow(win);
         printf("SDL_CreateTextureFromSurface Error: %s\n", SDL_GetError());
         SDL_Quit();
@@ -44,13 +47,19 @@ int main(int argc, const char **argv) {
     }
 
     //First clear the renderer
-    SDL_RenderClear(ren);
+    SDL_RenderClear(renderer);
     //Draw the texture
-    SDL_RenderCopy(ren, tex, NULL, NULL);
+    SDL_RenderCopy(renderer, tex, NULL, NULL);
+
+    // Draw a red line!
+    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+    for (int i = 0; i < WINDOW_WIDTH; ++i) {
+        SDL_RenderDrawPoint(renderer, i, i);
+    }
+    SDL_RenderPresent(renderer);
+
     //Update the screen
-    SDL_RenderPresent(ren);
-    //Take a quick break after all that hard work
-    SDL_Delay(1000);
+    SDL_RenderPresent(renderer);
 
     SDL_Event e;
     bool quit = false;
@@ -71,7 +80,7 @@ int main(int argc, const char **argv) {
     printf("Success!?\n");
 
     SDL_DestroyTexture(tex);
-    SDL_DestroyRenderer(ren);
+    SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(win);
     SDL_Quit();
     return 0;
