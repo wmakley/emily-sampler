@@ -9,7 +9,7 @@ It's a WIP.
 
 ## Compile and Run
 
-    ./compile.sh
+    ./compile_mac.sh
     ./sdl_main
 
 Image and code credit https://www.willusher.io/pages/sdl2/
