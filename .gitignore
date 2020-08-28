@@ -1,6 +1,9 @@
 ._*
 Thumbs.db
 
+# Editors
+.vscode
+
 # Built binaries
 curses
 hello_world
