@@ -2,6 +2,7 @@
 Thumbs.db
 
 # Built binaries
+curses
 hello_world
 sdl_main
 *.o
