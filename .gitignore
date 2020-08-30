@@ -10,7 +10,10 @@ hello_world
 if
 sdl_main
 *.o
+
+# build directories
 build
+target
 
 # Packages
 node_modules
