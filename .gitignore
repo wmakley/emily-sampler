@@ -7,6 +7,7 @@ Thumbs.db
 # Built binaries
 curses
 hello_world
+if
 sdl_main
 *.o
 
