@@ -4,6 +4,14 @@ This is a simple game about a rat and a plunger. It demonstrates one possible
 way to implement this kind of game in C++ using the command pattern and lots of
 runtime polymorphism for item and room behavior.
 
+## Compile and run
+
+Simple execute the "run.sh" script:
+
+```
+./run.sh
+```
+
 ## Design Notes
 
 * Rooms
