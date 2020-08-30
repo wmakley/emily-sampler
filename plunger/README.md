@@ -1,4 +1,10 @@
-# Wants:
+# Plunger
+
+This is a simple game about a rat and a plunger. It demonstrates one possible
+way to implement this kind of game in C++ using the command pattern and lots of
+runtime polymorphism for item and room behavior.
+
+## Design Notes
 
 * Rooms
   * Should be stateful.
@@ -13,9 +19,9 @@
 -> = Changes
 | = delegates
 
-Player ->
+Keyboard ->
   Game State |
-    Room ->
-      Game State
     Item ->
       Game State
+    Room ->
+      Own State

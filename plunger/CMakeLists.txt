@@ -6,5 +6,5 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 add_compile_options(-Wall -Wextra -pedantic -Werror)
 
 # set the project name
-project(roguelike)
+project(plunger)
 add_subdirectory(src)

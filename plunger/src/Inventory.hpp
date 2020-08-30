@@ -4,18 +4,20 @@
 #include <memory>
 #include <vector>
 
-#include "Item.hpp"
+class Item;
 
-class Inventory {
+class Inventory
+{
 private:
-  std::vector< std::shared_ptr<Item> > items_;
+  std::vector<std::shared_ptr<Item>> items_;
 
 public:
   Inventory();
   ~Inventory();
 
-  void add( std::shared_ptr<Item> item );
-  bool remove( std::shared_ptr<Item> item );
+  void add(std::shared_ptr<Item> item);
+  bool remove(std::shared_ptr<Item> item);
+  bool remove(Item *item);
 
   bool has_items() const;
   bool empty() const;

@@ -7,10 +7,12 @@
 #include <string>
 #include <utility>
 #include <iostream>
+#include "IGame.hpp"
 
 typedef uint32_t ItemId;
 
-class Item {
+class Item
+{
 private:
   const std::string name_;
 
@@ -18,48 +20,51 @@ public:
   const ItemId id;
   static ItemId NEXT_ID;
 
-  Item(const std::string& name);
-  Item(const Item& other);
-  Item(Item&& other);
+  Item(const std::string &name);
+  Item(const Item &other);
+  Item(Item &&other);
   virtual ~Item();
 
   virtual const std::string name() const;
-  virtual bool usable() const;
+  virtual bool usable(IGame &game) const;
 
-  virtual void use();
-  virtual void picked_up();
-  virtual void dropped();
+  virtual void use(IGame &game);
+  virtual void picked_up(IGame &game);
+  virtual void dropped(IGame &game);
 
-  friend std::ostream& operator<<(std::ostream& os, const Item& item);
+  friend std::ostream &operator<<(std::ostream &os, const Item &item);
 };
 
 // Make Items hashable by their globally unique ID
 namespace std
 {
-  template<> struct hash<Item>
+  template <>
+  struct hash<Item>
   {
-    std::size_t operator()(Item const& i) const noexcept
+    std::size_t operator()(Item const &i) const noexcept
     {
       return i.id;
     }
   };
-}
+} // namespace std
 
+std::ostream &operator<<(std::ostream &os, const Item &item);
 
-std::ostream& operator<<(std::ostream& os, const Item& item);
-
-
-class Plunger : public Item {
+class Plunger : public Item
+{
 public:
   Plunger();
   ~Plunger();
-  bool usable() const override;
+  bool usable(IGame &game) const override;
+  void use(IGame &game) override;
 };
 
-class PlungerWithRat : public Item {
+class PlungerWithRat : public Item
+{
 public:
   PlungerWithRat();
-  bool usable() const override;
+  bool usable(IGame &game) const override;
+  void use(IGame &game) override;
 };
 
 #endif
