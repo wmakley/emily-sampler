@@ -1,5 +1,6 @@
 #include "Item.hpp"
 #include "Game.hpp"
+#include "Room.hpp"
 
 uint32_t Item::NEXT_ID = 1;
 

@@ -1,7 +1,10 @@
 #include "UseItem.hpp"
 #include "Item.hpp"
 
-UseItem::UseItem(std::shared_ptr<Item> item) : item_(item) {}
+UseItem::UseItem(std::shared_ptr<Item> item)
+    : item_(item)
+{
+}
 
 void UseItem::execute(IGame &game)
 {

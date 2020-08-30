@@ -1,7 +1,12 @@
 #include "MoveToRoom.hpp"
 #include "Room.hpp"
 
-MoveToRoom::MoveToRoom(RoomId room_id) : Command(), room_id_(room_id) {}
+MoveToRoom::MoveToRoom(RoomId room_id)
+    : Command(),
+      room_id_(room_id)
+{
+}
+
 MoveToRoom::~MoveToRoom() {}
 
 void MoveToRoom::execute(IGame &game)

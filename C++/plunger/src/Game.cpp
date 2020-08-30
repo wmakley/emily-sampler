@@ -7,6 +7,7 @@
 #include "PickUpItem.hpp"
 #include "DropItem.hpp"
 #include "UseItem.hpp"
+#include "Room.hpp"
 
 Game::Game() : current_room_(NULL)
 {

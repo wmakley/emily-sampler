@@ -1,6 +1,7 @@
 #include "PickUpItem.hpp"
 #include "Player.hpp"
 #include "Item.hpp"
+#include "Room.hpp"
 
 PickUpItem::PickUpItem(std::shared_ptr<Room> room, std::shared_ptr<Item> item)
     : room_(room),

@@ -1,9 +1,11 @@
 #include "DropItem.hpp"
 #include "Item.hpp"
 #include "Player.hpp"
+#include "Room.hpp"
 
-DropItem::DropItem(std::shared_ptr<Room> room, std::shared_ptr<Item> item) : room_(room),
-                                                                             item_(item)
+DropItem::DropItem(std::shared_ptr<Room> room, std::shared_ptr<Item> item)
+    : room_(room),
+      item_(item)
 {
 }
 

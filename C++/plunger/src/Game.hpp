@@ -7,9 +7,10 @@
 
 #include "IGame.hpp"
 #include "RoomId.hpp"
-#include "Room.hpp"
 #include "Player.hpp"
-#include "Command.hpp"
+
+class Command;
+class Room;
 
 class Game : public IGame
 {

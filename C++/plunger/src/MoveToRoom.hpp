@@ -5,15 +5,17 @@
 #include "RoomId.hpp"
 #include "Command.hpp"
 
-class MoveToRoom: public Command {
+class MoveToRoom : public Command
+{
 private:
   const RoomId room_id_;
+
 public:
-  MoveToRoom(uint32_t room_id);
+  MoveToRoom(RoomId room_id);
   ~MoveToRoom();
 
-  void execute(IGame& game);
-  const std::string desc(IGame& game);
+  void execute(IGame &game);
+  const std::string desc(IGame &game);
 };
 
 #endif

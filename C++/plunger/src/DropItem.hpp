@@ -4,10 +4,13 @@
 #include <memory>
 #include <string>
 #include "Command.hpp"
-#include "Room.hpp"
 #include "IGame.hpp"
 
-class DropItem: public Command {
+class Room;
+class Item;
+
+class DropItem : public Command
+{
 private:
   std::shared_ptr<Room> room_;
   std::shared_ptr<Item> item_;
@@ -15,8 +18,8 @@ private:
 public:
   DropItem(std::shared_ptr<Room> room, std::shared_ptr<Item> item);
   ~DropItem();
-  void execute(IGame& game);
-  const std::string desc(IGame& game);
+  void execute(IGame &game);
+  const std::string desc(IGame &game);
 };
 
 #endif
