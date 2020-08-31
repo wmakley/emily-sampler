@@ -37,9 +37,12 @@ private:
   bool remove(const iterator &iter);
 };
 
-Inventory::iterator begin(Inventory &inventory);
-Inventory::iterator end(Inventory &inventory);
-Inventory::const_iterator begin(const Inventory &inventory);
-Inventory::const_iterator end(const Inventory &inventory);
+namespace std
+{
+  Inventory::iterator begin(Inventory &inventory);
+  Inventory::iterator end(Inventory &inventory);
+  Inventory::const_iterator begin(const Inventory &inventory);
+  Inventory::const_iterator end(const Inventory &inventory);
+} // namespace std
 
 #endif
