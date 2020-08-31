@@ -140,8 +140,8 @@ void Game::print_options()
               << std::endl;
     std::for_each(current_room_->inventory.begin(),
                   current_room_->inventory.end(),
-                  [](auto item) {
-                    std::cout << "  - " << item->name() << std::endl;
+                  [](std::shared_ptr<Item> item) {
+                    std::cout << "  * " << item->name() << std::endl;
                   });
     std::cout << std::endl;
   }
