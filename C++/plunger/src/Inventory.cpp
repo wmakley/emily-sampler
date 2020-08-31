@@ -12,13 +12,13 @@ void Inventory::add(std::shared_ptr<Item> item)
 
 bool Inventory::remove(std::shared_ptr<Item> item_to_remove)
 {
-  auto it = std::find(items_.begin(), items_.end(), item_to_remove);
+  auto it = std::find(std::begin(items_), std::end(items_), item_to_remove);
   return remove(it);
 }
 
 bool Inventory::remove(Item *item_to_remove)
 {
-  auto it = std::find_if(items_.begin(), items_.end(), [&item_to_remove](auto item) {
+  auto it = std::find_if(std::begin(items_), std::end(items_), [&item_to_remove](auto item) {
     return item.get() == item_to_remove;
   });
 
@@ -61,7 +61,40 @@ Inventory::iterator Inventory::end()
   return items_.end();
 }
 
+Inventory::const_iterator Inventory::begin() const
+{
+  return items_.begin();
+}
+
+Inventory::const_iterator Inventory::end() const
+{
+  return items_.end();
+}
+
 std::shared_ptr<Item> Inventory::operator[](size_t index) const
 {
   return items_[index];
 }
+
+namespace std
+{
+  Inventory::iterator begin(Inventory &inventory)
+  {
+    return inventory.begin();
+  }
+
+  Inventory::iterator end(Inventory &inventory)
+  {
+    return inventory.end();
+  }
+
+  Inventory::const_iterator begin(const Inventory &inventory)
+  {
+    return inventory.begin();
+  }
+
+  Inventory::const_iterator end(const Inventory &inventory)
+  {
+    return inventory.end();
+  }
+} // namespace std

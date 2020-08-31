@@ -8,13 +8,14 @@ class Item;
 
 class Inventory
 {
-  typedef std::vector<std::shared_ptr<Item>> ItemVec;
-  typedef ItemVec::iterator iterator;
-
 private:
+  typedef std::vector<std::shared_ptr<Item>> ItemVec;
   ItemVec items_;
 
 public:
+  typedef ItemVec::iterator iterator;
+  typedef ItemVec::const_iterator const_iterator;
+
   Inventory();
   ~Inventory();
 
@@ -29,9 +30,16 @@ public:
 
   iterator begin();
   iterator end();
+  const_iterator begin() const;
+  const_iterator end() const;
 
 private:
   bool remove(const iterator &iter);
 };
+
+Inventory::iterator begin(Inventory &inventory);
+Inventory::iterator end(Inventory &inventory);
+Inventory::const_iterator begin(const Inventory &inventory);
+Inventory::const_iterator end(const Inventory &inventory);
 
 #endif
