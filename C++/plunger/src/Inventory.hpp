@@ -8,8 +8,11 @@ class Item;
 
 class Inventory
 {
+  typedef std::vector<std::shared_ptr<Item>> ItemVec;
+  typedef ItemVec::iterator iterator;
+
 private:
-  std::vector<std::shared_ptr<Item>> items_;
+  ItemVec items_;
 
 public:
   Inventory();
@@ -22,8 +25,13 @@ public:
   bool has_items() const;
   bool empty() const;
   size_t size() const;
-
   std::shared_ptr<Item> operator[](size_t index) const;
+
+  iterator begin();
+  iterator end();
+
+private:
+  bool remove(const iterator &iter);
 };
 
 #endif

@@ -13,14 +13,7 @@ void Inventory::add(std::shared_ptr<Item> item)
 bool Inventory::remove(std::shared_ptr<Item> item_to_remove)
 {
   auto it = std::find(items_.begin(), items_.end(), item_to_remove);
-
-  if (it != items_.end())
-  {
-    items_.erase(it);
-    return true;
-  }
-
-  return false;
+  return remove(it);
 }
 
 bool Inventory::remove(Item *item_to_remove)
@@ -29,6 +22,11 @@ bool Inventory::remove(Item *item_to_remove)
     return item.get() == item_to_remove;
   });
 
+  return remove(it);
+}
+
+bool Inventory::remove(const iterator &it)
+{
   if (it != items_.end())
   {
     items_.erase(it);
@@ -38,14 +36,6 @@ bool Inventory::remove(Item *item_to_remove)
   return false;
 }
 
-// size_t index_of_item(const std::string& name) {
-//   size_t i = 0;
-//   auto result = std::find_if(items_.begin(), items_.end(), [&name,&i](auto item) {
-//     return (item->name() == name);
-//   });
-//   return -1;
-// }
-
 bool Inventory::has_items() const
 {
   return !empty();
@@ -53,12 +43,22 @@ bool Inventory::has_items() const
 
 bool Inventory::empty() const
 {
-  return items_.size() == 0;
+  return items_.empty();
 }
 
 size_t Inventory::size() const
 {
   return items_.size();
+}
+
+Inventory::iterator Inventory::begin()
+{
+  return items_.begin();
+}
+
+Inventory::iterator Inventory::end()
+{
+  return items_.end();
 }
 
 std::shared_ptr<Item> Inventory::operator[](size_t index) const

@@ -138,11 +138,11 @@ void Game::print_options()
   {
     std::cout << "Objects:" << std::endl
               << std::endl;
-    for (size_t i = 0; i < current_room_->inventory.size(); i++)
-    {
-      auto item = current_room_->inventory[i];
-      std::cout << "  - " << item->name() << std::endl;
-    }
+    std::for_each(current_room_->inventory.begin(),
+                  current_room_->inventory.end(),
+                  [](auto item) {
+                    std::cout << "  - " << item->name() << std::endl;
+                  });
     std::cout << std::endl;
   }
 
