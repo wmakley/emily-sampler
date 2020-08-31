@@ -13,8 +13,8 @@ private:
 
 public:
   UseItem(std::shared_ptr<Item> item);
-  void execute(IGame &game);
-  const std::string desc(IGame &game);
+  void execute(IGame &game) override;
+  const std::string desc(IGame &game) const override;
 };
 
 #endif

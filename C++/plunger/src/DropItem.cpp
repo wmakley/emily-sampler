@@ -20,7 +20,7 @@ void DropItem::execute(IGame &game)
   item_->dropped(game);
 }
 
-const std::string DropItem::desc(IGame &)
+const std::string DropItem::desc(IGame &) const
 {
   return "Drop " + item_->name();
 }

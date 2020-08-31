@@ -20,7 +20,7 @@ void PickUpItem::execute(IGame &game)
   item_->picked_up(game);
 }
 
-const std::string PickUpItem::desc(IGame &)
+const std::string PickUpItem::desc(IGame &) const
 {
   return std::string("Pick up ") + item_->name();
 }

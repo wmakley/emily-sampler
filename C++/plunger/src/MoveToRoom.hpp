@@ -14,8 +14,8 @@ public:
   MoveToRoom(RoomId room_id);
   ~MoveToRoom();
 
-  void execute(IGame &game);
-  const std::string desc(IGame &game);
+  void execute(IGame &game) override;
+  const std::string desc(IGame &game) const override;
 };
 
 #endif

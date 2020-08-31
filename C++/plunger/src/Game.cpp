@@ -102,19 +102,18 @@ void Game::rebuild_options()
 {
   options_.clear();
 
-  std::for_each(current_room_->links.begin(), current_room_->links.end(), [this](const RoomId link) {
-    this->options_.push_back(std::make_shared<MoveToRoom>(link));
-  });
-
-  for (size_t i = 0; i < current_room_->inventory.size(); i++)
+  for (const RoomId link : current_room_->links)
   {
-    auto item = current_room_->inventory[i];
+    options_.push_back(std::make_shared<MoveToRoom>(link));
+  }
+
+  for (auto item : current_room_->inventory)
+  {
     options_.push_back(std::make_shared<PickUpItem>(current_room_, item));
   }
 
-  for (size_t i = 0; i < player_.inventory.size(); i++)
+  for (auto item : player_.inventory)
   {
-    auto item = player_.inventory[i];
     if (item->usable(*this))
     {
       options_.push_back(std::make_shared<UseItem>(item));
@@ -138,11 +137,11 @@ void Game::print_options()
   {
     std::cout << "Objects:" << std::endl
               << std::endl;
-    std::for_each(current_room_->inventory.begin(),
-                  current_room_->inventory.end(),
-                  [](std::shared_ptr<Item> item) {
-                    std::cout << "  * " << item->name() << std::endl;
-                  });
+
+    for (auto const &item : current_room_->inventory)
+    {
+      std::cout << "  * " << item->name() << std::endl;
+    }
     std::cout << std::endl;
   }
 
@@ -150,23 +149,11 @@ void Game::print_options()
             << std::endl;
 
   int i = 1;
-  std::for_each(options_.begin(), options_.end(), [&i, this](std::shared_ptr<Command> command) {
+  for (auto const &command : options_)
+  {
     std::cout << "  (" << i << "): " << command->desc(*this) << std::endl;
     i++;
-  });
+  }
 
   std::cout << "  (q): Quit Game" << std::endl;
 }
-
-// std::vector<Command> Room::get_options() const {
-//   auto o = get_link_options();
-//   return o;
-// }
-
-// std::vector<Command> Room::get_link_options() const {
-//   std::vector<Command> vec( links.size() );
-//   std::for_each(links.begin(), links.end(), [&vec](const uint32_t link) {
-//     vec.push_back( MoveToRoom(link) );
-//   });
-//   return vec;
-// }

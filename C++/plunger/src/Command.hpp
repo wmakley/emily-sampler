@@ -7,10 +7,15 @@
 class Command
 {
 public:
-  virtual void execute(IGame &game) = 0;
-  virtual const std::string desc(IGame &game) = 0;
   Command();
   virtual ~Command();
+
+  virtual void execute(IGame &game) = 0;
+  virtual const std::string desc(IGame &game) const = 0;
+
+  friend std::ostream &operator<<(std::ostream &os, const Room &room);
 };
+
+std::ostream &operator<<(std::ostream &os, const Room &room);
 
 #endif

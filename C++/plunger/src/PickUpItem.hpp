@@ -18,8 +18,8 @@ private:
 public:
   PickUpItem(std::shared_ptr<Room> room, std::shared_ptr<Item> item);
   ~PickUpItem();
-  void execute(IGame &game);
-  const std::string desc(IGame &game);
+  void execute(IGame &game) override;
+  const std::string desc(IGame &game) const override;
 };
 
 #endif

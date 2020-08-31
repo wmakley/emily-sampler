@@ -14,7 +14,7 @@ void MoveToRoom::execute(IGame &game)
   game.move_player_to(room_id_);
 }
 
-const std::string MoveToRoom::desc(IGame &game)
+const std::string MoveToRoom::desc(IGame &game) const
 {
   return "Walk to " + game.get_room(room_id_)->name();
 }
