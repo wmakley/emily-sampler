@@ -1,6 +1,12 @@
 #include <iostream>
+#include <string>
 #include "Game.hpp"
 #include "UI.hpp"
+
+void bad_input(const std::string &input)
+{
+  std::cout << "Unrecognized input: '" << input << "'" << std::endl;
+}
 
 int main()
 {
@@ -10,7 +16,7 @@ int main()
   ui.start_game(game);
 
   bool done = false;
-  char key;
+  std::string input;
   while (!done)
   {
     ui.rebuild_options(game);
@@ -18,7 +24,9 @@ int main()
 
     std::cout << std::endl
               << ">> ";
-    std::cin >> key;
+
+    std::cin >> input;
+    const char key = input[0];
 
     if (key == 'q' || key == 'Q')
     {
@@ -27,12 +35,24 @@ int main()
     }
     else if (key >= '0' && key <= '9')
     {
-      const size_t option_index = (key - '0') - 1;
-      ui.execute_option(option_index, game);
+      try
+      {
+        const size_t number = std::stol(input);
+        const size_t option_index = number - 1;
+        ui.execute_option(option_index, game);
+      }
+      catch (std::invalid_argument)
+      {
+        bad_input(input);
+      }
+      catch (std::out_of_range)
+      {
+        std::cout << "Number too large or small: '" << input << "'" << std::endl;
+      }
     }
     else
     {
-      std::cout << "Unrecognized input: '" << key << "'" << std::endl;
+      bad_input(input);
     }
   }
 
