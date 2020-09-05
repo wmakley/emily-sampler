@@ -3,7 +3,7 @@
 #include "Item.hpp"
 #include "Room.hpp"
 
-PickUpItem::PickUpItem(std::shared_ptr<Room> room, std::shared_ptr<Item> item)
+PickUpItem::PickUpItem(Room *room, std::shared_ptr<Item> item)
     : room_(room),
       item_(item)
 {
@@ -15,9 +15,8 @@ void PickUpItem::execute(IGame &game)
 {
   room_->inventory.remove(item_);
   game.player()->inventory.add(item_);
-  game.rebuild_options();
-  std::cout << "Picked up " << item_->name() << "." << std::endl;
-  item_->picked_up(game);
+  std::cout << "Picked up " << item_->name() << "." << std::endl
+            << "You now have a " << item_->name() << "." << std::endl;
 }
 
 const std::string PickUpItem::desc(IGame &) const

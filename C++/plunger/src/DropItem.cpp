@@ -3,7 +3,7 @@
 #include "Player.hpp"
 #include "Room.hpp"
 
-DropItem::DropItem(std::shared_ptr<Room> room, std::shared_ptr<Item> item)
+DropItem::DropItem(Room *room, std::shared_ptr<Item> item)
     : room_(room),
       item_(item)
 {
@@ -15,9 +15,8 @@ void DropItem::execute(IGame &game)
 {
   game.player()->inventory.remove(item_);
   room_->inventory.add(item_);
-  game.rebuild_options();
-  std::cout << "Dropped " << item_->name() << "." << std::endl;
-  item_->dropped(game);
+  std::cout << "Dropped " << item_->name() << "." << std::endl
+            << "You no longer have a " << item_->name() << "." << std::endl;
 }
 
 const std::string DropItem::desc(IGame &) const

@@ -18,7 +18,6 @@ private:
   std::unordered_map<RoomId, std::shared_ptr<Room>> rooms_;
   std::shared_ptr<Room> current_room_;
   Player player_;
-  std::vector<std::shared_ptr<Command>> options_;
 
 public:
   Game();
@@ -27,10 +26,6 @@ public:
   Player *player() override;
   Room *current_room() override;
   void set_current_room(const RoomId room_id) override;
-  void print_room_desc() override;
-  void print_options() override;
-  void rebuild_options() override;
-  void execute_option(const size_t index) override;
 };
 
 #endif

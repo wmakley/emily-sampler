@@ -26,11 +26,9 @@ public:
   virtual ~Item();
 
   virtual const std::string name() const;
-  virtual bool usable(IGame &game) const;
 
+  virtual bool usable(IGame &game) const;
   virtual void use(IGame &game);
-  virtual void picked_up(IGame &game);
-  virtual void dropped(IGame &game);
 
   friend std::ostream &operator<<(std::ostream &os, const Item &item);
 };
@@ -54,7 +52,6 @@ class Plunger : public Item
 {
 public:
   Plunger();
-  ~Plunger();
   bool usable(IGame &game) const override;
   void use(IGame &game) override;
 };

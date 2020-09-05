@@ -1,20 +1,22 @@
-#include "Game.hpp"
-#include "MoveToRoom.hpp"
 #include <iostream>
 #include <exception>
+#include <memory>
+#include "Game.hpp"
+#include "UI.hpp"
 
 int main()
 {
   Game game;
+  UI ui;
 
-  std::cout << "Game start!" << std::endl;
-  MoveToRoom(KITCHEN).execute(game);
+  ui.start_game(game);
 
   bool done = false;
   char key;
   while (!done)
   {
-    game.print_options();
+    ui.rebuild_options(game);
+    ui.print_options(game);
 
     std::cout << std::endl
               << ">> ";
@@ -27,16 +29,8 @@ int main()
     }
     else if (key >= '0' && key <= '9')
     {
-      const size_t option_index = (key - '0');
-
-      try
-      {
-        game.execute_option(option_index);
-      }
-      catch (std::out_of_range e)
-      {
-        std::cout << "Unrecognized option: " << option_index << std::endl;
-      }
+      const size_t option_index = (key - '0') - 1;
+      ui.execute_option(option_index, game);
     }
     else
     {

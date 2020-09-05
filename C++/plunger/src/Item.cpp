@@ -40,16 +40,6 @@ void Item::use(IGame &)
 {
 }
 
-void Item::picked_up(IGame &)
-{
-  std::cout << "You now have a " << name() << "." << std::endl;
-}
-
-void Item::dropped(IGame &)
-{
-  std::cout << "You no longer have a " << name() << "." << std::endl;
-}
-
 std::ostream &operator<<(std::ostream &os, const Item &item)
 {
   os << "Item(" << item.id << ", \"" << item.name_ << "\")";
@@ -58,12 +48,6 @@ std::ostream &operator<<(std::ostream &os, const Item &item)
 
 Plunger::Plunger() : Item("Plunger")
 {
-  // std::cout << *this << std::endl;
-}
-
-Plunger::~Plunger()
-{
-  // std::cout << *this << " destructor" << std::endl;
 }
 
 bool Plunger::usable(IGame &game) const
@@ -92,8 +76,6 @@ void Plunger::use(IGame &game)
     player->inventory.add(std::make_shared<PlungerWithRat>());
     std::cout << "You suction the rat in your plunger." << std::endl
               << "You are carrying a plunger with a rat in it." << std::endl;
-
-    game.rebuild_options();
   }
   else if (room->id() == BATHROOM)
   {
@@ -117,13 +99,11 @@ void PlungerWithRat::use(IGame &game)
     player->inventory.remove(this);
     std::shared_ptr<Item> sun_bathing_rat = std::make_shared<Item>("Sun-bathing rat");
     room->inventory.add(sun_bathing_rat);
-    std::cout << "You release the rat. It is now sun-bathing on the back deck." << std::endl;
-    sun_bathing_rat->dropped(game);
+    std::cout << "You release the rat. It is now sun-bathing on the back deck." << std::endl
+              << "You no longer have a " << sun_bathing_rat->name() << "." << std::endl;
 
     std::shared_ptr<Plunger> plunger = std::make_shared<Plunger>();
     player->inventory.add(plunger);
-    plunger->picked_up(game);
-
-    game.rebuild_options();
+    std::cout << "You now have a " << plunger->name() << "." << std::endl;
   }
 }
