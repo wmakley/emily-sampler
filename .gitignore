@@ -15,5 +15,8 @@ sdl_main
 build
 target
 
+# Cmake-generated makefiles
+C++/plunger/**/Makefile
+
 # Packages
 node_modules
