@@ -5,7 +5,7 @@
 #include "Item.hpp"
 #include "Room.hpp"
 
-Game::Game() : current_room_(NULL)
+Game::Game()
 {
   rooms_[KITCHEN] = std::make_shared<Kitchen>();
 
@@ -27,22 +27,32 @@ Game::Game() : current_room_(NULL)
 
 Game::~Game() {}
 
-Room *Game::get_room(const RoomId room_id)
+std::shared_ptr<Room> Game::get_room(const RoomId room_id)
 {
-  return rooms_[room_id].get();
+  return rooms_[room_id];
 }
 
-Player *Game::player()
+std::shared_ptr<const Room> Game::get_room(const RoomId room_id) const
 {
-  return &player_;
+  return std::const_pointer_cast<const Room>(rooms_.at(room_id));
 }
 
-Room *Game::current_room()
+std::shared_ptr<Room> Game::current_room()
 {
-  return current_room_.get();
+  return get_room(player_.room_id());
 }
 
-void Game::set_current_room(const RoomId room_id)
+std::shared_ptr<const Room> Game::current_room() const
 {
-  current_room_ = rooms_[room_id];
+  return get_room(player_.room_id());
+}
+
+Player &Game::player()
+{
+  return player_;
+}
+
+const Player &Game::player() const
+{
+  return player_;
 }

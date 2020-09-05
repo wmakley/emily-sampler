@@ -20,7 +20,7 @@ void UseItem::execute(IGame &game)
   }
 }
 
-const std::string UseItem::desc(IGame &) const
+const std::string UseItem::desc(const IGame &) const
 {
   return "Use " + item_->name();
 }

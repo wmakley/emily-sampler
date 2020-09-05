@@ -16,16 +16,19 @@ class Game : public IGame
 {
 private:
   std::unordered_map<RoomId, std::shared_ptr<Room>> rooms_;
-  std::shared_ptr<Room> current_room_;
   Player player_;
 
 public:
   Game();
   ~Game();
-  Room *get_room(const RoomId id) override;
-  Player *player() override;
-  Room *current_room() override;
-  void set_current_room(const RoomId room_id) override;
+  std::shared_ptr<Room> get_room(const RoomId id) override;
+  std::shared_ptr<const Room> get_room(const RoomId id) const override;
+
+  std::shared_ptr<Room> current_room() override;
+  std::shared_ptr<const Room> current_room() const override;
+
+  Player &player() override;
+  const Player &player() const override;
 };
 
 #endif

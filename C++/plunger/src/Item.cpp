@@ -31,7 +31,7 @@ const std::string Item::name() const
   return name_;
 }
 
-bool Item::usable(IGame &) const
+bool Item::usable(const IGame &) const
 {
   return false;
 }
@@ -50,20 +50,31 @@ Plunger::Plunger() : Item("Plunger")
 {
 }
 
-bool Plunger::usable(IGame &game) const
+bool Plunger::usable(const IGame &game) const
 {
   // std::cout << "plunger useable called" << std::endl;
-  Room *room = game.current_room();
-  return room->id() == BATHROOM ||
-         (room->id() == KITCHEN && !((Kitchen *)room)->rat_killed());
+  std::shared_ptr<const Room> room = game.current_room();
+  bool result = false;
+  switch (room->id())
+  {
+  case BATHROOM:
+    result = true;
+    break;
+  case KITCHEN:
+    auto kitchen = (const Kitchen *const)room.get();
+    result = !kitchen->rat_killed();
+    break;
+  }
+
+  return result;
 }
 
 void Plunger::use(IGame &game)
 {
-  Room *room = game.current_room();
+  std::shared_ptr<Room> room = game.current_room();
   if (room->id() == KITCHEN)
   {
-    Kitchen *kitchen = (Kitchen *)room;
+    Kitchen *kitchen = (Kitchen *)room.get();
     if (kitchen->rat_killed())
     {
       return;
@@ -71,9 +82,9 @@ void Plunger::use(IGame &game)
 
     kitchen->kill_rat();
 
-    Player *player = game.player();
-    player->inventory.remove(this);
-    player->inventory.add(std::make_shared<PlungerWithRat>());
+    Player &player = game.player();
+    player.inventory.remove(this);
+    player.inventory.add(std::make_shared<PlungerWithRat>());
     std::cout << "You suction the rat in your plunger." << std::endl
               << "You are carrying a plunger with a rat in it." << std::endl;
   }
@@ -85,25 +96,30 @@ void Plunger::use(IGame &game)
 
 PlungerWithRat::PlungerWithRat() : Item("Plunger with rat") {}
 
-bool PlungerWithRat::usable(IGame &game) const
+bool PlungerWithRat::usable(const IGame &game) const
 {
+  std::cout << "PlungerWithRat usable?" << std::endl;
   return game.current_room()->id() == BACK_DECK;
 }
 
 void PlungerWithRat::use(IGame &game)
 {
-  Room *room = game.current_room();
+  std::shared_ptr<Room> room = game.current_room();
   if (room->id() == BACK_DECK)
   {
-    Player *player = game.player();
-    player->inventory.remove(this);
+    Player &player = game.player();
+    player.inventory.remove(this);
     std::shared_ptr<Item> sun_bathing_rat = std::make_shared<Item>("Sun-bathing rat");
     room->inventory.add(sun_bathing_rat);
     std::cout << "You release the rat. It is now sun-bathing on the back deck." << std::endl
               << "You no longer have a " << sun_bathing_rat->name() << "." << std::endl;
 
     std::shared_ptr<Plunger> plunger = std::make_shared<Plunger>();
-    player->inventory.add(plunger);
+    player.inventory.add(plunger);
     std::cout << "You now have a " << plunger->name() << "." << std::endl;
+  }
+  else
+  {
+    throw "cannot use plunger in this room";
   }
 }

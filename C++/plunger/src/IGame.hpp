@@ -18,10 +18,14 @@ class IGame
 {
 public:
   virtual ~IGame() {}
-  virtual Room *get_room(const RoomId id) = 0;
-  virtual Player *player() = 0;
-  virtual Room *current_room() = 0;
-  virtual void set_current_room(const RoomId room_id) = 0;
+
+  virtual std::shared_ptr<Room> get_room(const RoomId id) = 0;
+  virtual std::shared_ptr<const Room> get_room(const RoomId id) const = 0;
+  virtual std::shared_ptr<Room> current_room() = 0;
+  virtual std::shared_ptr<const Room> current_room() const = 0;
+
+  virtual Player &player() = 0;
+  virtual const Player &player() const = 0;
 };
 
 #endif

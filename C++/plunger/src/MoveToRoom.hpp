@@ -15,7 +15,7 @@ public:
   ~MoveToRoom();
 
   void execute(IGame &game) override;
-  const std::string desc(IGame &game) const override;
+  const std::string desc(const IGame &game) const override;
 };
 
 #endif

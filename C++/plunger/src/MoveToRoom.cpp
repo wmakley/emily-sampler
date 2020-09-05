@@ -14,29 +14,27 @@ MoveToRoom::~MoveToRoom() {}
 void MoveToRoom::execute(IGame &game)
 {
   // std::cout << "move_player_to(" << room_id_ << ")" << std::endl;
-  Room *const room = game.get_room(room_id_);
-
-  game.set_current_room(room_id_);
-  game.player()->move_to(room_id_);
+  std::shared_ptr<Room> room = game.get_room(room_id_);
+  game.player().move_to(room->id());
 
   std::cout << "You are in the " << room->name() << "." << std::endl
-            << room->desc() << std::endl
-            << std::endl;
+            << room->desc() << std::endl;
 
   if (room->inventory.has_items())
   {
-    std::cout << "Objects:" << std::endl
+    std::cout << std::endl
+              << "Objects:" << std::endl
               << std::endl;
 
     for (auto const &item : room->inventory)
     {
       std::cout << "  * " << item->name() << std::endl;
     }
-    std::cout << std::endl;
+    // std::cout << std::endl;
   }
 }
 
-const std::string MoveToRoom::desc(IGame &game) const
+const std::string MoveToRoom::desc(const IGame &game) const
 {
   return "Walk to " + game.get_room(room_id_)->name();
 }

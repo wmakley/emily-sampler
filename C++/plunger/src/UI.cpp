@@ -16,10 +16,10 @@ void UI::start_game(IGame &game) const
   MoveToRoom(KITCHEN).execute(game);
 }
 
-void UI::rebuild_options(IGame &game)
+void UI::rebuild_options(const IGame &game)
 {
-  Room *room = game.current_room();
-  Player *player = game.player();
+  std::shared_ptr<const Room> room = game.current_room();
+  const Player &player = game.player();
 
   options_.clear();
 
@@ -30,22 +30,23 @@ void UI::rebuild_options(IGame &game)
 
   for (auto item : room->inventory)
   {
-    options_.push_back(std::make_shared<PickUpItem>(room, item));
+    options_.push_back(std::make_shared<PickUpItem>(item));
   }
 
-  for (auto item : player->inventory)
+  for (auto item : player.inventory)
   {
     if (item->usable(game))
     {
       options_.push_back(std::make_shared<UseItem>(item));
     }
-    options_.push_back(std::make_shared<DropItem>(room, item));
+    options_.push_back(std::make_shared<DropItem>(item));
   }
 }
 
-void UI::print_options(IGame &game)
+void UI::print_options(const IGame &game) const
 {
-  std::cout << "Options:" << std::endl
+  std::cout << std::endl
+            << "Options:" << std::endl
             << std::endl;
 
   int i = 1;
@@ -58,7 +59,7 @@ void UI::print_options(IGame &game)
   std::cout << "  (q): Quit Game" << std::endl;
 }
 
-void UI::execute_option(const size_t index, IGame &game)
+void UI::execute_option(const size_t index, IGame &game) const
 {
   // std::cout << "execute_option(" << index << ")" << std::endl;
   try

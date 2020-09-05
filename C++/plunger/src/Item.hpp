@@ -25,7 +25,7 @@ public:
 
   virtual const std::string name() const;
 
-  virtual bool usable(IGame &game) const;
+  virtual bool usable(const IGame &game) const;
   virtual void use(IGame &game);
 
   friend std::ostream &operator<<(std::ostream &os, const Item &item);
@@ -50,7 +50,7 @@ class Plunger : public Item
 {
 public:
   Plunger();
-  bool usable(IGame &game) const override;
+  bool usable(const IGame &game) const override;
   void use(IGame &game) override;
 };
 
@@ -58,7 +58,7 @@ class PlungerWithRat : public Item
 {
 public:
   PlungerWithRat();
-  bool usable(IGame &game) const override;
+  bool usable(const IGame &game) const override;
   void use(IGame &game) override;
 };
 

@@ -5,8 +5,9 @@
 #include "Inventory.hpp"
 #include "RoomId.hpp"
 #include "IGame.hpp"
+#include "NonCopyable.hpp"
 
-class Player
+class Player : public NonCopyable
 {
 private:
   RoomId room_id_;

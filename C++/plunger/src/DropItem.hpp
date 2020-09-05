@@ -12,14 +12,14 @@ class Item;
 class DropItem : public Command
 {
 private:
-  Room *room_;
   std::shared_ptr<Item> item_;
 
 public:
-  DropItem(Room *room, std::shared_ptr<Item> item);
+  DropItem(std::shared_ptr<Item> item);
+  DropItem(const DropItem &other);
   ~DropItem();
   void execute(IGame &game) override;
-  const std::string desc(IGame &game) const override;
+  const std::string desc(const IGame &game) const override;
 };
 
 #endif

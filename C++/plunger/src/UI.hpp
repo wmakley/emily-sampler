@@ -15,9 +15,9 @@ private:
 
 public:
   void start_game(IGame &game) const;
-  void rebuild_options(IGame &game);
-  void print_options(IGame &game);
-  void execute_option(const size_t index, IGame &game);
+  void rebuild_options(const IGame &game);
+  void print_options(const IGame &game) const;
+  void execute_option(const size_t index, IGame &game) const;
 };
 
 #endif

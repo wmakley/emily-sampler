@@ -11,7 +11,7 @@ public:
   virtual ~Command();
 
   virtual void execute(IGame &game) = 0;
-  virtual const std::string desc(IGame &game) const = 0;
+  virtual const std::string desc(const IGame &game) const = 0;
 
   friend std::ostream &operator<<(std::ostream &os, const Room &room);
 };
