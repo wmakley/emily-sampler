@@ -26,6 +26,9 @@ public:
 
   virtual Player &player() = 0;
   virtual const Player &player() const = 0;
+
+  virtual bool rat_removed() const = 0;
+  virtual void remove_rat() = 0;
 };
 
 #endif

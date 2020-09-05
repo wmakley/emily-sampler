@@ -2,6 +2,7 @@
 #define ITEM_HPP
 
 #include <cstdint>
+#include <functional>
 #include <memory>
 #include <string>
 #include <iostream>
@@ -11,21 +12,26 @@ typedef uint32_t ItemId;
 
 class Item
 {
+public:
+  typedef std::function<bool(const IGame &)> UsablePredicate;
+
 private:
   const std::string name_;
+  const UsablePredicate usable_predicate_;
 
 public:
   const ItemId id;
   static ItemId NEXT_ID;
 
   Item(const std::string &name);
+  Item(const std::string &name, const UsablePredicate &pred);
   Item(const Item &other);
   Item(Item &&other);
   virtual ~Item();
 
   virtual const std::string name() const;
 
-  virtual bool usable(const IGame &game) const;
+  bool usable(const IGame &game) const;
   virtual void use(IGame &game);
 
   friend std::ostream &operator<<(std::ostream &os, const Item &item);
@@ -50,7 +56,6 @@ class Plunger : public Item
 {
 public:
   Plunger();
-  bool usable(const IGame &game) const override;
   void use(IGame &game) override;
 };
 
@@ -58,7 +63,6 @@ class PlungerWithRat : public Item
 {
 public:
   PlungerWithRat();
-  bool usable(const IGame &game) const override;
   void use(IGame &game) override;
 };
 

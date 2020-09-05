@@ -26,8 +26,8 @@ public:
   virtual ~Room();
 
   RoomId id() const;
-  virtual const std::string name() const;
-  virtual const std::string desc() const;
+  const std::string name() const;
+  virtual const std::string desc(const IGame &) const;
 
   void add_link(RoomId room_id);
 
@@ -38,16 +38,9 @@ std::ostream &operator<<(std::ostream &os, const Room &room);
 
 class Kitchen : public Room
 {
-private:
-  bool rat_killed_;
-
 public:
   Kitchen();
-  Kitchen(bool rat_killed);
-  Kitchen(const Kitchen &other);
-  const std::string desc() const override;
-  void kill_rat();
-  bool rat_killed() const;
+  const std::string desc(const IGame &) const override;
 };
 
 #endif

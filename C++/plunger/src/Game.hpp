@@ -17,6 +17,7 @@ class Game : public IGame
 private:
   std::unordered_map<RoomId, std::shared_ptr<Room>> rooms_;
   Player player_;
+  bool rat_removed_;
 
 public:
   Game();
@@ -29,6 +30,9 @@ public:
 
   Player &player() override;
   const Player &player() const override;
+
+  bool rat_removed() const override;
+  void remove_rat() override;
 };
 
 #endif

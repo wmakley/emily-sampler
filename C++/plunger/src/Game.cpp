@@ -6,6 +6,7 @@
 #include "Room.hpp"
 
 Game::Game()
+    : rat_removed_(false)
 {
   rooms_[KITCHEN] = std::make_shared<Kitchen>();
 
@@ -55,4 +56,14 @@ Player &Game::player()
 const Player &Game::player() const
 {
   return player_;
+}
+
+bool Game::rat_removed() const
+{
+  return rat_removed_;
+}
+
+void Game::remove_rat()
+{
+  rat_removed_ = true;
 }

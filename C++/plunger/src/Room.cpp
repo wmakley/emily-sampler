@@ -8,11 +8,6 @@ Room::Room(const RoomId id, const std::string &name, const std::string &desc)
   // std::cout << *this << " constructor" << std::endl;
 }
 
-Room::Room(const Room &other)
-    : id_(other.id_), name_(other.name_), desc_(other.desc_)
-{
-}
-
 Room::~Room()
 {
   // std::cout << *this << " destructor" << std::endl;
@@ -28,7 +23,7 @@ const std::string Room::name() const
   return name_;
 }
 
-const std::string Room::desc() const
+const std::string Room::desc(const IGame &) const
 {
   return desc_;
 }
@@ -45,44 +40,18 @@ std::ostream &operator<<(std::ostream &os, const Room &room)
 }
 
 Kitchen::Kitchen()
-    : Room(KITCHEN, "Kitchen", "It is very grungy, and there are crumbs all over the stove."),
-      rat_killed_(false)
+    : Room(KITCHEN, "Kitchen", "It is very grungy, and there are crumbs all over the stove.")
 {
 }
 
-Kitchen::Kitchen(bool rat_killed) : Kitchen()
+const std::string Kitchen::desc(const IGame &game) const
 {
-  rat_killed_ = rat_killed;
-}
-
-Kitchen::Kitchen(const Kitchen &other) : Kitchen()
-{
-  rat_killed_ = other.rat_killed_;
-}
-
-void Kitchen::kill_rat()
-{
-  if (rat_killed_)
+  if (game.rat_removed())
   {
-    return;
-  }
-
-  rat_killed_ = true;
-}
-
-bool Kitchen::rat_killed() const
-{
-  return rat_killed_;
-}
-
-const std::string Kitchen::desc() const
-{
-  if (rat_killed_)
-  {
-    return Room::desc();
+    return Room::desc(game);
   }
   else
   {
-    return Room::desc() + "\nThere is a large rat eating the crumbs.";
+    return Room::desc(game) + "\nThere is a large rat eating the crumbs.";
   }
 }

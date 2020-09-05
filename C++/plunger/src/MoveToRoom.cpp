@@ -18,7 +18,7 @@ void MoveToRoom::execute(IGame &game)
   game.player().move_to(room->id());
 
   std::cout << "You are in the " << room->name() << "." << std::endl
-            << room->desc() << std::endl;
+            << room->desc(game) << std::endl;
 
   if (room->inventory.has_items())
   {
