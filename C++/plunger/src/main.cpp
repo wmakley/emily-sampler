@@ -1,6 +1,4 @@
 #include <iostream>
-#include <exception>
-#include <memory>
 #include "Game.hpp"
 #include "UI.hpp"
 
