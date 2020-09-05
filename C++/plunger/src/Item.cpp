@@ -6,24 +6,14 @@ uint32_t Item::NEXT_ID = 1;
 
 Item::Item(const std::string &name)
     : name_(name),
-      usable_predicate_([](const IGame &) { return false; }),
       id(Item::NEXT_ID)
 
-{
-  NEXT_ID++;
-}
-
-Item::Item(const std::string &name, const Item::UsablePredicate &pred)
-    : name_(name),
-      usable_predicate_(pred),
-      id(Item::NEXT_ID)
 {
   NEXT_ID++;
 }
 
 Item::Item(const Item &other)
     : name_(other.name_),
-      usable_predicate_(other.usable_predicate_),
       id(other.id)
 {
   // std::cout << *this << ": copy constructor" << std::endl;
@@ -31,7 +21,6 @@ Item::Item(const Item &other)
 
 Item::Item(Item &&other)
     : name_(std::move(other.name_)),
-      usable_predicate_(std::move(other.usable_predicate_)),
       id(std::move(other.id))
 {
   // std::cout << *this << ": move constructor" << std::endl;
@@ -47,9 +36,9 @@ const std::string Item::name() const
   return name_;
 }
 
-bool Item::usable(const IGame &game) const
+bool Item::usable(const IGame &) const
 {
-  return usable_predicate_(game);
+  return false;
 }
 
 void Item::use(IGame &)
@@ -63,23 +52,25 @@ std::ostream &operator<<(std::ostream &os, const Item &item)
 }
 
 Plunger::Plunger()
-    : Item("Plunger",
-           [](const IGame &game) {
-             std::shared_ptr<const Room> room = game.current_room();
-             bool result = false;
-             switch (room->id())
-             {
-             case BATHROOM:
-               result = true;
-               break;
-             case KITCHEN:
-               result = !game.rat_removed();
-               break;
-             }
-
-             return result;
-           })
+    : Item("Plunger")
 {
+}
+
+bool Plunger::usable(const IGame &game) const
+{
+  std::shared_ptr<const Room> room = game.current_room();
+  bool result = false;
+  switch (room->id())
+  {
+  case BATHROOM:
+    result = true;
+    break;
+  case KITCHEN:
+    result = !game.rat_removed();
+    break;
+  }
+
+  return result;
 }
 
 void Plunger::use(IGame &game)
@@ -107,11 +98,13 @@ void Plunger::use(IGame &game)
 }
 
 PlungerWithRat::PlungerWithRat()
-    : Item("Plunger with rat",
-           [](const IGame &game) {
-             return game.current_room()->id() == BACK_DECK;
-           })
+    : Item("Plunger with rat")
 {
+}
+
+bool PlungerWithRat::usable(const IGame &game) const
+{
+  return game.current_room()->id() == BACK_DECK;
 }
 
 void PlungerWithRat::use(IGame &game)
