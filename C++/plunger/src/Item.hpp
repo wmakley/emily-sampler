@@ -2,10 +2,8 @@
 #define ITEM_HPP
 
 #include <cstdint>
-#include <algorithm>
 #include <memory>
 #include <string>
-#include <utility>
 #include <iostream>
 #include "IGame.hpp"
 
