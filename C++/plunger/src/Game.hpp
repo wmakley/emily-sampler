@@ -23,14 +23,14 @@ private:
 public:
   Game();
   ~Game();
-  void start() override;
   Room *get_room(const RoomId id) override;
   Player *player() override;
   Room *current_room() override;
-  void move_player_to(const RoomId room_id) override;
+  void set_current_room(const RoomId room_id) override;
   void print_room_desc() override;
   void print_options() override;
   void rebuild_options() override;
+  void execute_option(const size_t index) override;
 };
 
 #endif

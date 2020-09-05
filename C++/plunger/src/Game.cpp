@@ -31,48 +31,6 @@ Game::Game() : current_room_(NULL)
 
 Game::~Game() {}
 
-void Game::start()
-{
-  std::cout << "Game start!" << std::endl;
-
-  move_player_to(KITCHEN);
-
-  bool done = false;
-  char key;
-  while (!done)
-  {
-    print_options();
-
-    std::cout << std::endl
-              << ">> ";
-    std::cin >> key;
-
-    if (key == 'q' || key == 'Q')
-    {
-      done = true;
-      std::cout << "Quitting!" << std::endl;
-    }
-    else if (key >= '0' && key <= '9')
-    {
-      const size_t option_index = (key - '0');
-
-      if (option_index >= 1 && option_index <= options_.size())
-      {
-        auto cmd = options_[option_index - 1];
-        cmd->execute(*this);
-      }
-      else
-      {
-        std::cout << "Unrecognized option: " << option_index << std::endl;
-      }
-    }
-    else
-    {
-      std::cout << "Unrecognized input: '" << key << "'" << std::endl;
-    }
-  }
-}
-
 Room *Game::get_room(const RoomId room_id)
 {
   return rooms_[room_id].get();
@@ -88,14 +46,10 @@ Room *Game::current_room()
   return current_room_.get();
 }
 
-void Game::move_player_to(const RoomId room_id)
+void Game::set_current_room(const RoomId room_id)
 {
-  // std::cout << "move_player_to(" << room_id << ")" << std::endl;
-  auto room = rooms_[room_id];
+  std::shared_ptr<Room> room = rooms_[room_id];
   current_room_ = room;
-  player_.move_to(room_id);
-  rebuild_options();
-  print_room_desc();
 }
 
 void Game::rebuild_options()
@@ -120,6 +74,12 @@ void Game::rebuild_options()
     }
     options_.push_back(std::make_shared<DropItem>(current_room_, item));
   }
+}
+
+void Game::execute_option(const size_t index)
+{
+  std::shared_ptr<Command> option = options_.at(index);
+  option->execute(*this);
 }
 
 void Game::print_room_desc()

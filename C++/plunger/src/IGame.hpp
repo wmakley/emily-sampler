@@ -18,14 +18,14 @@ class IGame
 {
 public:
   virtual ~IGame() {}
-  virtual void start() = 0;
   virtual Room *get_room(const RoomId id) = 0;
   virtual Player *player() = 0;
   virtual Room *current_room() = 0;
-  virtual void move_player_to(const RoomId room_id) = 0;
+  virtual void set_current_room(const RoomId room_id) = 0;
   virtual void print_room_desc() = 0;
   virtual void print_options() = 0;
   virtual void rebuild_options() = 0;
+  virtual void execute_option(const size_t index) = 0;
 };
 
 #endif
