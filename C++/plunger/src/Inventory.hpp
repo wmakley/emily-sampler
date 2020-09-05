@@ -2,6 +2,7 @@
 #define INVENTORY_HPP
 
 #include <memory>
+#include <utility>
 #include <vector>
 
 class Item;
@@ -17,6 +18,7 @@ public:
   typedef ItemVec::const_iterator const_iterator;
 
   Inventory();
+  Inventory(std::initializer_list<std::shared_ptr<Item>> items);
   ~Inventory();
 
   void add(std::shared_ptr<Item> item);

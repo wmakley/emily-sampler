@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "Inventory.hpp"
@@ -21,6 +22,11 @@ public:
   std::vector<RoomId> links;
 
   Room(const RoomId id, const std::string &name, const std::string &desc);
+  Room(const RoomId id, const std::string &name, const std::string &desc,
+       std::initializer_list<RoomId> links);
+  Room(const RoomId id, const std::string &name, const std::string &desc,
+       std::initializer_list<RoomId> links,
+       std::initializer_list<std::shared_ptr<Item>> items);
   Room(const Room &other);
 
   virtual ~Room();
@@ -40,6 +46,7 @@ class Kitchen : public Room
 {
 public:
   Kitchen();
+  Kitchen(std::initializer_list<RoomId>);
   const std::string desc(const IGame &) const override;
 };
 

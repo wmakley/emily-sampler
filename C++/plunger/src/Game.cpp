@@ -8,22 +8,30 @@
 Game::Game()
     : rat_removed_(false)
 {
-  rooms_[KITCHEN] = std::make_shared<Kitchen>();
+  rooms_[KITCHEN] = std::make_shared<Kitchen>(std::initializer_list<RoomId>{
+      BATHROOM,
+      LIVING_ROOM});
 
-  rooms_[BATHROOM] = std::make_shared<Room>(BATHROOM, "Bathroom", "It is reasonably clean.");
-  rooms_[BATHROOM]->inventory.add(std::make_shared<Plunger>());
+  rooms_[BATHROOM] = std::make_shared<Room>(
+      BATHROOM, "Bathroom", "It is reasonably clean.",
+      std::initializer_list<RoomId>{
+          KITCHEN,
+          LIVING_ROOM},
+      std::initializer_list<std::shared_ptr<Item>>{
+          std::make_shared<Plunger>()});
 
-  rooms_[LIVING_ROOM] = std::make_shared<Room>(LIVING_ROOM, "Living Room", "You are standing near the coffee table.\nIt is cluttered.\nYou can see the kitchen, bathroom, and back door.");
-  rooms_[BACK_DECK] = std::make_shared<Room>(BACK_DECK, "Back deck", "You are standing just outside of the sliding door.\nIt is sunny and beautiful.");
+  rooms_[LIVING_ROOM] = std::make_shared<Room>(
+      LIVING_ROOM, "Living Room", "You are standing near the coffee table.\nIt is cluttered.\nYou can see the kitchen, bathroom, and back door.",
+      std::initializer_list<RoomId>{
+          BACK_DECK,
+          BATHROOM,
+          KITCHEN,
+      });
 
-  rooms_[KITCHEN]->add_link(BATHROOM);
-  rooms_[KITCHEN]->add_link(LIVING_ROOM);
-  rooms_[BATHROOM]->add_link(KITCHEN);
-  rooms_[BATHROOM]->add_link(LIVING_ROOM);
-  rooms_[LIVING_ROOM]->add_link(BATHROOM);
-  rooms_[LIVING_ROOM]->add_link(KITCHEN);
-  rooms_[LIVING_ROOM]->add_link(BACK_DECK);
-  rooms_[BACK_DECK]->add_link(LIVING_ROOM);
+  rooms_[BACK_DECK] = std::make_shared<Room>(
+      BACK_DECK, "Back deck", "You are standing just outside of the sliding door.\nIt is sunny and beautiful.",
+      std::initializer_list<RoomId>{
+          LIVING_ROOM});
 }
 
 Game::~Game() {}

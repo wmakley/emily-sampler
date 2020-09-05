@@ -117,7 +117,7 @@ void PlungerWithRat::use(IGame &game)
     std::shared_ptr<Item> sun_bathing_rat = std::make_shared<Item>("Sun-bathing rat");
     room->inventory.add(sun_bathing_rat);
     std::cout << "You release the rat. It is now sun-bathing on the back deck." << std::endl
-              << "You no longer have a " << sun_bathing_rat->name() << "." << std::endl;
+              << "You no longer have a " << this->name() << "." << std::endl;
 
     std::shared_ptr<Plunger> plunger = std::make_shared<Plunger>();
     player.inventory.add(plunger);

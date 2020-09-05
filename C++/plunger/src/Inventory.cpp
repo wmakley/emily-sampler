@@ -4,6 +4,11 @@
 Inventory::Inventory() {}
 Inventory::~Inventory() {}
 
+Inventory::Inventory(std::initializer_list<std::shared_ptr<Item>> items)
+    : items_(items)
+{
+}
+
 void Inventory::add(std::shared_ptr<Item> item)
 {
   // std::cout << "add item by shared_ptr: " << item << std::endl;
