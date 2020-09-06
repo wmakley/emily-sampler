@@ -44,7 +44,7 @@ const std::string Room::desc(const IGame &) const
 
 void Room::add_link(RoomId room_id)
 {
-  links.push_back(room_id);
+  links.insert(room_id);
 }
 
 std::ostream &operator<<(std::ostream &os, const Room &room)

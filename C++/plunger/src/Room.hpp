@@ -4,7 +4,7 @@
 #include <iostream>
 #include <string>
 #include <utility>
-#include <vector>
+#include <set>
 
 #include "Inventory.hpp"
 #include "RoomId.hpp"
@@ -19,7 +19,7 @@ private:
 
 public:
   Inventory inventory;
-  std::vector<RoomId> links;
+  std::set<RoomId> links;
 
   Room(const RoomId id, const std::string &name, const std::string &desc);
   Room(const RoomId id, const std::string &name, const std::string &desc,
