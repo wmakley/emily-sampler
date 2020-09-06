@@ -1,14 +1,12 @@
 #ifndef ITEM_HPP
 #define ITEM_HPP
 
-#include <cstdint>
 #include <functional>
 #include <memory>
 #include <string>
 #include <iostream>
 #include "IGame.hpp"
-
-typedef uint32_t ItemId;
+#include "ItemId.hpp"
 
 class Item
 {

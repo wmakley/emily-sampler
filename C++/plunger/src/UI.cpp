@@ -43,6 +43,30 @@ void UI::rebuild_options(const IGame &game)
   }
 }
 
+void UI::describe_room(const IGame &game) const
+{
+  auto room = game.current_room();
+  std::cout << "You are in the " << room->name() << "." << std::endl
+            << room->desc(game) << std::endl;
+}
+
+void UI::list_room_objects(const IGame &game) const
+{
+  auto room = game.current_room();
+  if (room->inventory.has_items())
+  {
+    std::cout << std::endl
+              << "Objects:" << std::endl
+              << std::endl;
+
+    for (auto const &item : room->inventory)
+    {
+      std::cout << "  * " << item->name() << std::endl;
+    }
+    // std::cout << std::endl;
+  }
+}
+
 void UI::print_options(const IGame &game) const
 {
   std::cout << std::endl

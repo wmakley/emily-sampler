@@ -66,7 +66,7 @@ bool Plunger::usable(const IGame &game) const
     result = true;
     break;
   case KITCHEN:
-    result = !game.rat_removed();
+    result = !game.flag(IGame::RAT_REMOVED);
     break;
   }
 
@@ -78,18 +78,20 @@ void Plunger::use(IGame &game)
   std::shared_ptr<Room> room = game.current_room();
   if (room->id() == KITCHEN)
   {
-    if (game.rat_removed())
+    if (game.flag(IGame::RAT_REMOVED))
     {
       throw "rat already removed";
     }
 
-    game.remove_rat();
+    game.set_flag(IGame::RAT_REMOVED, true);
 
     Player &player = game.player();
     player.inventory.remove(this);
     player.inventory.add(std::make_shared<PlungerWithRat>());
     std::cout << "You suction the rat in your plunger." << std::endl
               << "You are carrying a plunger with a rat in it." << std::endl;
+
+    game.set_temp_flag(IGame::PLAYER_INVENTORY_CHANGED);
   }
   else if (room->id() == BATHROOM)
   {
@@ -122,6 +124,9 @@ void PlungerWithRat::use(IGame &game)
     std::shared_ptr<Plunger> plunger = std::make_shared<Plunger>();
     player.inventory.add(plunger);
     std::cout << "You now have a " << plunger->name() << "." << std::endl;
+
+    game.set_temp_flag(IGame::PLAYER_INVENTORY_CHANGED);
+    game.set_temp_flag(IGame::ROOM_INVENTORY_CHANGED);
   }
   else
   {

@@ -16,6 +16,9 @@ void PickUpItem::execute(IGame &game)
   game.player().inventory.add(item_);
   std::cout << "Picked up " << item_->name() << "." << std::endl
             << "You now have a " << item_->name() << "." << std::endl;
+
+  game.set_temp_flag(IGame::PLAYER_INVENTORY_CHANGED);
+  game.set_temp_flag(IGame::ROOM_INVENTORY_CHANGED);
 }
 
 const std::string PickUpItem::desc(const IGame &) const

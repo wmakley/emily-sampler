@@ -1,12 +1,13 @@
 #include <algorithm>
 #include <iostream>
+#include <stdexcept>
 #include <string>
 #include "Game.hpp"
 #include "Item.hpp"
 #include "Room.hpp"
 
 Game::Game()
-    : rat_removed_(false)
+    : flags_({{IGame::RAT_REMOVED, false}})
 {
   rooms_[KITCHEN] = std::make_shared<Kitchen>(std::initializer_list<RoomId>{
       BATHROOM,
@@ -66,12 +67,41 @@ const Player &Game::player() const
   return player_;
 }
 
-bool Game::rat_removed() const
+bool Game::flag(IGame::Flag key) const
 {
-  return rat_removed_;
+  try
+  {
+    return flags_.at(key);
+  }
+  catch (std::out_of_range)
+  {
+    return false;
+  }
 }
 
-void Game::remove_rat()
+void Game::set_flag(IGame::Flag key, bool value)
 {
-  rat_removed_ = true;
+  flags_[key] = value;
+}
+
+bool Game::temp_flag(IGame::TempFlag key) const
+{
+  try
+  {
+    return temp_flags_.at(key);
+  }
+  catch (std::out_of_range)
+  {
+    return false;
+  }
+}
+
+void Game::set_temp_flag(IGame::TempFlag key)
+{
+  temp_flags_[key] = true;
+}
+
+void Game::reset_temp_flags()
+{
+  temp_flags_.clear();
 }

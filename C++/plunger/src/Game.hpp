@@ -16,8 +16,9 @@ class Game : public IGame
 {
 private:
   std::unordered_map<RoomId, std::shared_ptr<Room>> rooms_;
+  std::unordered_map<IGame::Flag, bool> flags_;
+  std::unordered_map<IGame::TempFlag, bool> temp_flags_;
   Player player_;
-  bool rat_removed_;
 
 public:
   Game();
@@ -31,8 +32,12 @@ public:
   Player &player() override;
   const Player &player() const override;
 
-  bool rat_removed() const override;
-  void remove_rat() override;
+  bool flag(IGame::Flag) const override;
+  void set_flag(IGame::Flag, bool) override;
+
+  bool temp_flag(IGame::TempFlag) const override;
+  void set_temp_flag(IGame::TempFlag) override;
+  void reset_temp_flags() override;
 };
 
 #endif

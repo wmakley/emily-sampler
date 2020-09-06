@@ -16,6 +16,8 @@ private:
 public:
   void start_game(IGame &game) const;
   void rebuild_options(const IGame &game);
+  void describe_room(const IGame &game) const;
+  void list_room_objects(const IGame &game) const;
   void print_options(const IGame &game) const;
   void execute_option(const size_t index, IGame &game) const;
 };

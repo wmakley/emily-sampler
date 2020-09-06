@@ -20,7 +20,16 @@ int main()
   while (!done)
   {
     ui.rebuild_options(game);
+    if (game.temp_flag(IGame::ROOM_CHANGED))
+    {
+      ui.describe_room(game);
+    }
+    if (game.temp_flag(IGame::ROOM_INVENTORY_CHANGED) || game.temp_flag(IGame::ROOM_CHANGED))
+    {
+      ui.list_room_objects(game);
+    }
     ui.print_options(game);
+    game.reset_temp_flags();
 
     std::cout << std::endl
               << ">> ";

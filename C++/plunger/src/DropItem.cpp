@@ -21,6 +21,9 @@ void DropItem::execute(IGame &game)
   game.current_room()->inventory.add(item_);
   std::cout << "Dropped " << item_->name() << "." << std::endl
             << "You no longer have a " << item_->name() << "." << std::endl;
+
+  game.set_temp_flag(IGame::PLAYER_INVENTORY_CHANGED);
+  game.set_temp_flag(IGame::ROOM_INVENTORY_CHANGED);
 }
 
 const std::string DropItem::desc(const IGame &) const

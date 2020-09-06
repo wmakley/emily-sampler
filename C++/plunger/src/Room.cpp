@@ -67,7 +67,7 @@ Kitchen::Kitchen(std::initializer_list<RoomId> _links)
 
 const std::string Kitchen::desc(const IGame &game) const
 {
-  if (game.rat_removed())
+  if (game.flag(IGame::RAT_REMOVED))
   {
     return Room::desc(game);
   }

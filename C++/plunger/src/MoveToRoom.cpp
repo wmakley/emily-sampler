@@ -17,21 +17,23 @@ void MoveToRoom::execute(IGame &game)
   std::shared_ptr<Room> room = game.get_room(room_id_);
   game.player().move_to(room->id());
 
-  std::cout << "You are in the " << room->name() << "." << std::endl
-            << room->desc(game) << std::endl;
+  game.set_temp_flag(IGame::ROOM_CHANGED);
 
-  if (room->inventory.has_items())
-  {
-    std::cout << std::endl
-              << "Objects:" << std::endl
-              << std::endl;
+  // std::cout << "You are in the " << room->name() << "." << std::endl
+  //           << room->desc(game) << std::endl;
 
-    for (auto const &item : room->inventory)
-    {
-      std::cout << "  * " << item->name() << std::endl;
-    }
-    // std::cout << std::endl;
-  }
+  // if (room->inventory.has_items())
+  // {
+  //   std::cout << std::endl
+  //             << "Objects:" << std::endl
+  //             << std::endl;
+
+  //   for (auto const &item : room->inventory)
+  //   {
+  //     std::cout << "  * " << item->name() << std::endl;
+  //   }
+  //   // std::cout << std::endl;
+  // }
 }
 
 const std::string MoveToRoom::desc(const IGame &game) const
