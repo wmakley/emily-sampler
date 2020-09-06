@@ -4,7 +4,6 @@
 #include <iostream>
 #include "Inventory.hpp"
 #include "RoomId.hpp"
-#include "IGame.hpp"
 #include "NonCopyable.hpp"
 
 class Player : public NonCopyable

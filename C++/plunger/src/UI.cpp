@@ -1,5 +1,6 @@
-#include <exception>
 #include <iostream>
+#include <stdexcept>
+
 #include "UI.hpp"
 #include "Item.hpp"
 #include "Command.hpp"

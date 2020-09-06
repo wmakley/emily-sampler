@@ -3,7 +3,6 @@
 
 #include <memory>
 #include <unordered_map>
-#include <vector>
 
 #include "IGame.hpp"
 #include "RoomId.hpp"

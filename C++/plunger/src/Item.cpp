@@ -1,3 +1,5 @@
+#include <memory>
+
 #include "Item.hpp"
 #include "Game.hpp"
 #include "Room.hpp"

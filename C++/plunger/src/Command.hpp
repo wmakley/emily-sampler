@@ -1,6 +1,7 @@
 #ifndef COMMAND_HPP
 #define COMMAND_HPP
 
+#include <iostream>
 #include <string>
 #include "IGame.hpp"
 

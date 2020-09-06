@@ -1,10 +1,9 @@
 #ifndef ITEM_HPP
 #define ITEM_HPP
 
-#include <functional>
-#include <memory>
 #include <string>
 #include <iostream>
+
 #include "IGame.hpp"
 #include "ItemId.hpp"
 

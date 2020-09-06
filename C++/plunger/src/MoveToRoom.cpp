@@ -18,22 +18,6 @@ void MoveToRoom::execute(IGame &game)
   game.player().move_to(room->id());
 
   game.set_temp_flag(IGame::ROOM_CHANGED);
-
-  // std::cout << "You are in the " << room->name() << "." << std::endl
-  //           << room->desc(game) << std::endl;
-
-  // if (room->inventory.has_items())
-  // {
-  //   std::cout << std::endl
-  //             << "Objects:" << std::endl
-  //             << std::endl;
-
-  //   for (auto const &item : room->inventory)
-  //   {
-  //     std::cout << "  * " << item->name() << std::endl;
-  //   }
-  //   // std::cout << std::endl;
-  // }
 }
 
 const std::string MoveToRoom::desc(const IGame &game) const

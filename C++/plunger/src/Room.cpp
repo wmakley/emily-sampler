@@ -1,7 +1,5 @@
 #include "Room.hpp"
 
-#include <iostream>
-
 Room::Room(const RoomId id, const std::string &name, const std::string &desc)
     : id_(id), name_(name), desc_(desc)
 {
