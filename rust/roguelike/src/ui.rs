@@ -66,6 +66,7 @@ impl<R: io::Read, W: io::Write> UI<R, W> {
 
     /// Render the entire UI including all sub-windows.
     pub fn render(&mut self, game: &GameState) {
+        let original_capacity = self.buffer.capacity();
         self.buffer.clear();
         write!(self.buffer, "{}", cursor::Hide).unwrap();
 
@@ -91,6 +92,9 @@ impl<R: io::Read, W: io::Write> UI<R, W> {
 
         self.stdout.write(self.buffer.as_bytes()).unwrap();
         self.stdout.flush().unwrap();
+
+        // We want to make sure the buffer is big enough, and not expanding in an uncontrolled manner.
+        debug_assert!(self.buffer.capacity() == original_capacity);
     }
 
     pub fn start_event_loop(&mut self, game: &mut GameState) {
@@ -139,13 +143,16 @@ impl Window for MapWindow {
     fn render(&self, out: &mut dyn fmt::Write, game: &GameState) {
         let player_position = game.player().position();
         let blank = Tile::of_type(BLANK);
-        let mut prev_tile_type = blank.get_type();
+
+        // Used to avoid sending unnecessary color control characters to terminal.
+        let mut prev_bg_color = blank.get_type().bg_color;
+        let mut prev_fg_color = blank.get_type().fg_color;
 
         write!(
             out,
             "{}{}",
-            color::Bg(prev_tile_type.bg_color),
-            color::Fg(prev_tile_type.fg_color),
+            color::Bg(prev_bg_color),
+            color::Fg(prev_fg_color),
         )
         .unwrap();
 
@@ -156,27 +163,29 @@ impl Window for MapWindow {
                 let entity = point.and_then(|p| game.entity_at(&p));
 
                 let tile_type = tile.get_type();
-                if tile_type.bg_color != prev_tile_type.bg_color {
+                if tile_type.bg_color != prev_bg_color {
                     write!(out, "{}", color::Bg(tile_type.bg_color)).unwrap();
                 }
 
                 match entity {
                     Some(e) => {
-                        if e.fg_color() != prev_tile_type.fg_color {
-                            write!(out, "{}", color::Fg(tile_type.fg_color)).unwrap();
+                        if e.fg_color() != prev_fg_color {
+                            write!(out, "{}", color::Fg(e.fg_color())).unwrap();
                         }
                         write!(out, "{}", e.char()).unwrap();
+                        prev_fg_color = e.fg_color();
                     }
 
                     None => {
-                        if tile_type.fg_color != prev_tile_type.fg_color {
+                        if tile_type.fg_color != prev_fg_color {
                             write!(out, "{}", color::Fg(tile_type.fg_color)).unwrap();
                         }
                         write!(out, "{}", tile.get_type().char).unwrap();
+                        prev_fg_color = tile_type.fg_color;
                     }
                 }
 
-                prev_tile_type = tile_type;
+                prev_bg_color = tile_type.bg_color;
             }
 
             write!(
