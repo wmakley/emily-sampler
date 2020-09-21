@@ -18,6 +18,29 @@ pub struct UI<R: io::Read, W: io::Write> {
     windows: Vec<Box<dyn Window<W>>>,
 }
 
+trait Window<W: io::Write> {
+    /// Get the window's Rect.
+    fn rect(&self) -> &Rect;
+
+    /// Render the window inside its rect.
+    fn render(&self, stdout: &mut W, game: &GameState);
+}
+
+struct MapWindow {
+    rect: Rect,
+}
+
+/// Basic dimensions and positioning for all windows.
+/// Zero-based, not one-based. Conversion happens only in cursor::Goto,
+/// not before.
+#[derive(Debug)]
+struct Rect {
+    width: u16,
+    height: u16,
+    top: u16,
+    left: u16,
+}
+
 impl<R: io::Read, W: io::Write> UI<R, W> {
     pub fn new(stdout: W, stdin: R) -> UI<R, W> {
         let termsize = termion::terminal_size().ok();
@@ -25,10 +48,10 @@ impl<R: io::Read, W: io::Write> UI<R, W> {
         let termheight = termsize.map(|(_, h)| h).unwrap_or(40);
 
         let map_win = Box::new(MapWindow::new(Rect {
-            top: 1,
-            left: 1,
-            width: termwidth - 2,
-            height: termheight - 2,
+            top: 0,
+            left: 0,
+            width: termwidth,
+            height: termheight,
         }));
 
         return UI {
@@ -40,7 +63,7 @@ impl<R: io::Read, W: io::Write> UI<R, W> {
 
     /// Render the entire UI including all sub-windows.
     pub fn render(&mut self, game: &GameState) {
-        write!(self.stdout, "{}{}", clear::All, cursor::Hide,).unwrap();
+        write!(self.stdout, "{}{}", clear::All, cursor::Hide).unwrap();
 
         for win in self.windows.iter() {
             write!(
@@ -57,8 +80,8 @@ impl<R: io::Read, W: io::Write> UI<R, W> {
         write!(
             self.stdout,
             "{}{}",
-            color::Bg(color::Reset),
-            color::Fg(color::Reset)
+            color::Bg(color::Black),
+            color::Fg(color::White)
         )
         .unwrap();
 
@@ -101,29 +124,6 @@ impl<R: io::Read, W: io::Write> Drop for UI<R, W> {
         )
         .unwrap();
     }
-}
-
-/// Basic dimensions and positioning for all windows.
-/// Zero-based, not one-based. Conversion happens only in cursor::Goto,
-/// not before.
-#[derive(Debug)]
-struct Rect {
-    width: u16,
-    height: u16,
-    top: u16,
-    left: u16,
-}
-
-trait Window<W: io::Write> {
-    /// Get the window's Rect.
-    fn rect(&self) -> &Rect;
-
-    /// Render the window inside its rect.
-    fn render(&self, stdout: &mut W, game: &GameState);
-}
-
-struct MapWindow {
-    rect: Rect,
 }
 
 impl<W: io::Write> Window<W> for MapWindow {

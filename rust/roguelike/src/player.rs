@@ -19,7 +19,7 @@ impl Player {
             id: ID,
             name: name.trim().to_string(),
             inventory: Vec::new(),
-            position: Point { x: 1, y: 1 },
+            position: Point { x: 5, y: 5 },
         };
     }
 }

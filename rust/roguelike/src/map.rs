@@ -37,12 +37,6 @@ impl Point {
         assert!(y <= MAX_HEIGHT);
         return Point { x: x, y: y };
     }
-
-    pub fn try_from_ints(x: i32, y: i32) -> Result<Point, std::num::TryFromIntError> {
-        let xu = usize::try_from(x)?;
-        let yu = usize::try_from(y)?;
-        return Ok(Point { x: xu, y: yu });
-    }
 }
 
 impl fmt::Display for Point {
@@ -50,14 +44,6 @@ impl fmt::Display for Point {
         return write!(f, "{:?}", self);
     }
 }
-
-// #[derive(Copy, Clone, Debug, PartialEq, Eq)]
-// pub struct Rect {
-//     pub left: usize,
-//     pub top: usize,
-//     pub width: u16,
-//     pub height: u16,
-// }
 
 impl Map {
     pub fn new(width: usize, height: usize) -> Map {
@@ -109,34 +95,6 @@ impl Map {
                     self.set_tile_at(&point, SNOW).unwrap();
                 }
             }
-        }
-    }
-
-    fn gen_walls(&mut self) {
-        // side walls
-        for i in 0..self.height {
-            let left_index = self.index_from_point(&Point { x: 0, y: i }).unwrap();
-            self.tiles[left_index] = Tile::of_type(WALL);
-            let right_index = self
-                .index_from_point(&Point {
-                    x: self.width - 1,
-                    y: i,
-                })
-                .unwrap();
-            self.tiles[right_index] = Tile::of_type(WALL);
-        }
-
-        // top and bottom walls
-        for i in 1..self.width - 1 {
-            let top_index = self.index_from_point(&Point { x: i, y: 0 }).unwrap();
-            self.tiles[top_index] = Tile::of_type(WALL2);
-            let bottom_index = self
-                .index_from_point(&Point {
-                    x: i,
-                    y: self.height - 1,
-                })
-                .unwrap();
-            self.tiles[bottom_index] = Tile::of_type(WALL2);
         }
     }
 
@@ -276,12 +234,6 @@ const TILE_TYPES: &'static [TileType] = &[
         fg_color: TileColor::White,
     },
     TileType {
-        char: '%',
-        passable: false,
-        bg_color: TileColor::Black,
-        fg_color: TileColor::LightCyan,
-    },
-    TileType {
         char: ' ',
         passable: false,
         bg_color: TileColor::Black,
@@ -309,8 +261,7 @@ const TILE_TYPES: &'static [TileType] = &[
 
 pub const GROUND: usize = 0;
 pub const WALL: usize = 1;
-pub const WALL2: usize = 2;
-pub const BLANK: usize = 3;
-pub const WATER: usize = 4;
-pub const MOUNTAIN: usize = 5;
-pub const SNOW: usize = 6;
+pub const BLANK: usize = 2;
+pub const WATER: usize = 3;
+pub const MOUNTAIN: usize = 4;
+pub const SNOW: usize = 5;
