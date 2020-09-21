@@ -5,6 +5,7 @@ use crate::game::GameState;
 use crate::map::{Point, Tile, BLANK};
 use crate::player::PlayerMove;
 use log;
+use std::fmt::{self, Write};
 use std::io;
 
 // use std::convert::TryFrom;
@@ -15,15 +16,16 @@ use termion::{clear, color, cursor, style};
 pub struct UI<R: io::Read, W: io::Write> {
     stdin: Keys<R>,
     stdout: W,
-    windows: Vec<Box<dyn Window<W>>>,
+    buffer: String,
+    windows: Vec<Box<dyn Window>>,
 }
 
-trait Window<W: io::Write> {
+trait Window {
     /// Get the window's Rect.
     fn rect(&self) -> &Rect;
 
     /// Render the window inside its rect.
-    fn render(&self, stdout: &mut W, game: &GameState);
+    fn render(&self, out: &mut dyn fmt::Write, game: &GameState);
 }
 
 struct MapWindow {
@@ -57,34 +59,37 @@ impl<R: io::Read, W: io::Write> UI<R, W> {
         return UI {
             stdin: stdin.keys(),
             stdout: stdout,
+            buffer: String::with_capacity(termwidth as usize * termheight as usize * 5),
             windows: vec![map_win],
         };
     }
 
     /// Render the entire UI including all sub-windows.
     pub fn render(&mut self, game: &GameState) {
-        write!(self.stdout, "{}{}", clear::All, cursor::Hide).unwrap();
+        self.buffer.clear();
+        write!(self.buffer, "{}{}", clear::All, cursor::Hide).unwrap();
 
         for win in self.windows.iter() {
             write!(
-                self.stdout,
+                self.buffer,
                 "{}",
                 cursor::Goto(win.rect().left + 1, win.rect().top + 1)
             )
             .unwrap();
 
-            win.render(&mut self.stdout, game);
+            win.render(&mut self.buffer, game);
         }
 
         // Reset colors back to terminal defaults
         write!(
-            self.stdout,
+            self.buffer,
             "{}{}",
             color::Bg(color::Black),
             color::Fg(color::White)
         )
         .unwrap();
 
+        self.stdout.write(self.buffer.as_bytes()).unwrap();
         self.stdout.flush().unwrap();
     }
 
@@ -126,18 +131,18 @@ impl<R: io::Read, W: io::Write> Drop for UI<R, W> {
     }
 }
 
-impl<W: io::Write> Window<W> for MapWindow {
+impl Window for MapWindow {
     fn rect(&self) -> &Rect {
         return &self.rect;
     }
 
-    fn render(&self, stdout: &mut W, game: &GameState) {
+    fn render(&self, out: &mut dyn fmt::Write, game: &GameState) {
         let player_position = game.player().position();
         let blank = Tile::of_type(BLANK);
         let mut prev_tile_type = blank.get_type();
 
         write!(
-            stdout,
+            out,
             "{}{}",
             color::Bg(prev_tile_type.bg_color),
             color::Fg(prev_tile_type.fg_color),
@@ -152,22 +157,22 @@ impl<W: io::Write> Window<W> for MapWindow {
 
                 let tile_type = tile.get_type();
                 if tile_type.bg_color != prev_tile_type.bg_color {
-                    write!(stdout, "{}", color::Bg(tile_type.bg_color)).unwrap();
+                    write!(out, "{}", color::Bg(tile_type.bg_color)).unwrap();
                 }
 
                 match entity {
                     Some(e) => {
                         if e.fg_color() != prev_tile_type.fg_color {
-                            write!(stdout, "{}", color::Fg(tile_type.fg_color)).unwrap();
+                            write!(out, "{}", color::Fg(tile_type.fg_color)).unwrap();
                         }
-                        write!(stdout, "{}", e.char()).unwrap();
+                        write!(out, "{}", e.char()).unwrap();
                     }
 
                     None => {
                         if tile_type.fg_color != prev_tile_type.fg_color {
-                            write!(stdout, "{}", color::Fg(tile_type.fg_color)).unwrap();
+                            write!(out, "{}", color::Fg(tile_type.fg_color)).unwrap();
                         }
-                        write!(stdout, "{}", tile.get_type().char).unwrap();
+                        write!(out, "{}", tile.get_type().char).unwrap();
                     }
                 }
 
@@ -175,7 +180,7 @@ impl<W: io::Write> Window<W> for MapWindow {
             }
 
             write!(
-                stdout,
+                out,
                 "{}",
                 cursor::Goto(self.rect.left + 1, self.rect.top + win_y + 2)
             )
