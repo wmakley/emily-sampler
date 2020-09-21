@@ -1,7 +1,13 @@
+use crate::perlin::PerlinNoise;
 use std::convert::TryFrom;
 use std::fmt;
 use termion;
 use termion::color::{self, Color};
+
+/// MAX_WIDTH and MAX_HEIGHT have been chosen so that they do not exceed
+/// i32::MAX when multiplied together, to make signed arithmetic easier.
+pub const MAX_WIDTH: usize = 46_340;
+pub const MAX_HEIGHT: usize = 46_340;
 
 pub struct Map {
     pub tiles: Box<[Tile]>,
@@ -10,13 +16,25 @@ pub struct Map {
 }
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
+pub struct Tile {
+    tile_type: usize,
+}
+
+/// Reference to a point on the Map. No points can ever be
+/// less than zero (upper-left corner). x and y may also not
+/// exceed MAX_WIDTH and MAX_HEIGHT.
+#[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub struct Point {
     pub x: usize,
     pub y: usize,
 }
 
 impl Point {
+    /// Create a point with bounds checking against MAX_WIDTH and MAX_HEIGHT.
+    /// (Panics if out of bounds.)
     pub fn new(x: usize, y: usize) -> Point {
+        assert!(x <= MAX_WIDTH);
+        assert!(y <= MAX_HEIGHT);
         return Point { x: x, y: y };
     }
 
@@ -27,16 +45,27 @@ impl Point {
     }
 }
 
-#[derive(Copy, Clone, Debug, PartialEq, Eq)]
-pub struct Rect {
-    pub left: usize,
-    pub top: usize,
-    pub width: u16,
-    pub height: u16,
+impl fmt::Display for Point {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        return write!(f, "{:?}", self);
+    }
 }
+
+// #[derive(Copy, Clone, Debug, PartialEq, Eq)]
+// pub struct Rect {
+//     pub left: usize,
+//     pub top: usize,
+//     pub width: u16,
+//     pub height: u16,
+// }
 
 impl Map {
     pub fn new(width: usize, height: usize) -> Map {
+        assert!(width <= MAX_WIDTH);
+        assert!(width > 0);
+        assert!(height <= MAX_HEIGHT);
+        assert!(height > 0);
+
         let tiles = vec![Tile::of_type(GROUND); width * height].into_boxed_slice();
 
         let mut map = Map {
@@ -45,9 +74,42 @@ impl Map {
             tiles: tiles,
         };
 
-        map.gen_walls();
+        map.gen_perlin();
 
         return map;
+    }
+
+    fn gen_perlin(&mut self) {
+        let width_f = self.width as f64;
+        let height_f = self.height as f64;
+        let perlin = PerlinNoise::new();
+        for i in 0..self.height {
+            for j in 0..self.width {
+                let x = j as f64 / width_f;
+                let y = i as f64 / height_f;
+
+                let n = perlin.noise(10.0 * x, 10.0 * y, 0.8);
+
+                let point = Point { x: j, y: i };
+
+                // water
+                if n < 0.35 {
+                    self.set_tile_at(&point, WATER).unwrap();
+                }
+                // floors or plains
+                else if n >= 0.35 && n < 0.6 {
+                    self.set_tile_at(&point, GROUND).unwrap();
+                }
+                // walls / mountains
+                else if n >= 0.6 && n < 0.8 {
+                    self.set_tile_at(&point, MOUNTAIN).unwrap();
+                }
+                // ice / snow
+                else {
+                    self.set_tile_at(&point, SNOW).unwrap();
+                }
+            }
+        }
     }
 
     fn gen_walls(&mut self) {
@@ -83,6 +145,12 @@ impl Map {
         return index.map(|i| &self.tiles[i]);
     }
 
+    pub fn set_tile_at(&mut self, point: &Point, tile_type: usize) -> Option<usize> {
+        let index = self.index_from_point(point)?;
+        self.tiles[index].tile_type = tile_type;
+        return Some(tile_type);
+    }
+
     pub fn index_from_point(&self, point: &Point) -> Option<usize> {
         if point.x >= self.width || point.y >= self.height {
             return None;
@@ -90,6 +158,7 @@ impl Map {
         return Some(point.x + (self.width * point.y));
     }
 
+    #[allow(unused)]
     pub fn point_from_index(&self, index: usize) -> Option<Point> {
         if index > self.tiles.len() {
             return None;
@@ -103,11 +172,6 @@ impl Map {
             y: row,
         });
     }
-}
-
-#[derive(Copy, Clone, Debug, PartialEq, Eq)]
-pub struct Tile {
-    tile_type: usize,
 }
 
 impl Tile {
@@ -223,9 +287,30 @@ const TILE_TYPES: &'static [TileType] = &[
         bg_color: TileColor::Black,
         fg_color: TileColor::White,
     },
+    TileType {
+        char: '~',
+        passable: true,
+        bg_color: TileColor::Black,
+        fg_color: TileColor::Blue,
+    },
+    TileType {
+        char: '^',
+        passable: false,
+        bg_color: TileColor::LightBlack,
+        fg_color: TileColor::White,
+    },
+    TileType {
+        char: 'S',
+        passable: false,
+        bg_color: TileColor::LightBlack,
+        fg_color: TileColor::White,
+    },
 ];
 
 pub const GROUND: usize = 0;
 pub const WALL: usize = 1;
 pub const WALL2: usize = 2;
 pub const BLANK: usize = 3;
+pub const WATER: usize = 4;
+pub const MOUNTAIN: usize = 5;
+pub const SNOW: usize = 6;

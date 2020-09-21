@@ -5,6 +5,7 @@ pub trait Action: fmt::Display {
     fn execute(&self, game: &mut GameState);
 }
 
+#[derive(Debug, PartialEq, Eq)]
 pub enum Direction {
     Up,
     Down,
@@ -24,10 +25,14 @@ impl fmt::Display for Direction {
     }
 }
 
+#[derive(Debug, PartialEq, Eq)]
 pub struct Move {
     pub dir: Direction,
     pub entity_id: usize,
 }
+
+#[derive(Debug, PartialEq, Eq)]
+pub struct EndPlayerTurn;
 
 impl fmt::Display for Move {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -69,9 +74,12 @@ impl Action for Move {
     fn execute(&self, game: &mut GameState) {
         let map_width = game.map.width;
         let map_height = game.map.height;
+
         let entity = game.get_entity(self.entity_id).unwrap();
+
         let old_position = entity.position().clone();
         let mut new_position = old_position;
+
         match self.dir {
             Direction::Up => {
                 if old_position.y == 0 {
@@ -98,8 +106,33 @@ impl Action for Move {
                 new_position.x += 1;
             }
         }
-        if new_position != old_position {
-            game.move_entity(self.entity_id, &old_position, new_position);
+        if new_position == old_position {
+            return;
         }
+
+        // check if tile impassable
+        let destination_tile = game.map.tile_at(&new_position).unwrap();
+        if !destination_tile.get_type().passable {
+            return;
+        }
+        // check if entity in the way
+        match game.entity_at(&new_position) {
+            Some(_) => return,
+            _ => {}
+        }
+
+        game.move_entity(self.entity_id, &old_position, new_position);
+    }
+}
+
+impl Action for EndPlayerTurn {
+    fn execute(&self, game: &mut GameState) {
+        game.update();
+    }
+}
+
+impl fmt::Display for EndPlayerTurn {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        return write!(f, "End Player Turn");
     }
 }

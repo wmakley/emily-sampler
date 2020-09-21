@@ -1,5 +1,7 @@
-use crate::game::Entity;
+use crate::action::{Action, EndPlayerTurn, Move};
+use crate::game::{Entity, GameState};
 use crate::map::{Point, TileColor};
+use std::fmt;
 
 // Player is always entity 0
 pub const ID: usize = 0;
@@ -8,7 +10,7 @@ pub struct Player {
     id: usize,
     pub name: String,
     pub inventory: Vec<u32>,
-    pub position: Point,
+    position: Point,
 }
 
 impl Player {
@@ -45,5 +47,53 @@ impl Entity for Player {
 
     fn fg_color(&self) -> TileColor {
         return TileColor::White;
+    }
+
+    fn update(&self, _game: &GameState) -> Vec<Box<dyn Action>> {
+        return Vec::with_capacity(0);
+    }
+}
+
+#[derive(Debug)]
+pub struct PlayerMove {
+    entity_move: Move,
+}
+
+impl PlayerMove {
+    pub fn up() -> PlayerMove {
+        return PlayerMove {
+            entity_move: Move::up(ID),
+        };
+    }
+
+    pub fn down() -> PlayerMove {
+        return PlayerMove {
+            entity_move: Move::down(ID),
+        };
+    }
+
+    pub fn left() -> PlayerMove {
+        return PlayerMove {
+            entity_move: Move::left(ID),
+        };
+    }
+
+    pub fn right() -> PlayerMove {
+        return PlayerMove {
+            entity_move: Move::right(ID),
+        };
+    }
+}
+
+impl Action for PlayerMove {
+    fn execute(&self, game: &mut GameState) {
+        self.entity_move.execute(game);
+        EndPlayerTurn.execute(game);
+    }
+}
+
+impl fmt::Display for PlayerMove {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        return self.entity_move.fmt(f);
     }
 }

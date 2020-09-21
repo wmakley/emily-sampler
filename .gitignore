@@ -15,6 +15,9 @@ sdl_main
 build
 target
 
+# Logs
+*.log
+
 # Cmake-generated makefiles
 C++/plunger/**/Makefile
 
