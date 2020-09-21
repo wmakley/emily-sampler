@@ -67,7 +67,7 @@ impl<R: io::Read, W: io::Write> UI<R, W> {
     /// Render the entire UI including all sub-windows.
     pub fn render(&mut self, game: &GameState) {
         self.buffer.clear();
-        write!(self.buffer, "{}{}", clear::All, cursor::Hide).unwrap();
+        write!(self.buffer, "{}", cursor::Hide).unwrap();
 
         for win in self.windows.iter() {
             write!(
