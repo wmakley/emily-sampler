@@ -56,10 +56,13 @@ impl<R: io::Read, W: io::Write> UI<R, W> {
             height: termheight,
         }));
 
+        let buffer_capacity = termwidth as usize * termheight as usize * 5;
+        log::debug!("Back buffer capacity: {}", buffer_capacity);
+
         return UI {
             stdin: stdin.keys(),
             stdout: stdout,
-            buffer: String::with_capacity(termwidth as usize * termheight as usize * 5),
+            buffer: String::with_capacity(buffer_capacity),
             windows: vec![map_win],
         };
     }
@@ -228,10 +231,10 @@ impl MapWindow {
         // always succeed.
         let point = Point::new(x as usize, y as usize);
 
-        let (test_x, test_y) = (25, 31);
-        if win_x == test_x && win_y == test_y {
-            log::debug!("Map point for win ({},{}) = {:?}", test_x, test_y, point);
-        }
+        // let (test_x, test_y) = (25, 31);
+        // if win_x == test_x && win_y == test_y {
+        //     log::debug!("Map point for win ({},{}) = {:?}", test_x, test_y, point);
+        // }
 
         return Some(point);
     }
