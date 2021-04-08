@@ -1,5 +1,6 @@
 use crate::action::{Action, EndPlayerTurn, Move};
-use crate::game::{Entity, GameState};
+use crate::entity::Entity;
+use crate::game::GameState;
 use crate::map::{Point, TileColor};
 use std::fmt;
 

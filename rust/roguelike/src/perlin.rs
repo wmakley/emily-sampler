@@ -3,8 +3,8 @@ pub struct PerlinNoise {
     p: Vec<i32>,
 }
 
-// Initialize with the reference values for the permutation vector
 impl PerlinNoise {
+    /// Initialize with the reference values for the permutation vector
     pub fn new() -> PerlinNoise {
         let mut p = vec![
             151, 160, 137, 91, 90, 15, 131, 13, 201, 95, 96, 53, 194, 233, 7, 225, 140, 36, 103,

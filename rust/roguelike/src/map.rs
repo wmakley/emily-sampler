@@ -1,5 +1,4 @@
 use crate::perlin::PerlinNoise;
-use std::convert::TryFrom;
 use std::fmt;
 use termion;
 use termion::color::{self, Color};

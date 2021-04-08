@@ -1,4 +1,5 @@
 mod action;
+mod entity;
 mod game;
 mod item;
 mod map;

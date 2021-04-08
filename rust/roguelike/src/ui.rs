@@ -24,7 +24,8 @@ trait Window {
     /// Get the window's Rect.
     fn rect(&self) -> &Rect;
 
-    /// Render the window inside its rect.
+    /// Render the window inside its rect to a buffer.
+    /// (There is no enforcement; windows must stay inside their rect manually).
     fn render(&self, out: &mut dyn fmt::Write, game: &GameState);
 }
 
