@@ -1,0 +1,5 @@
+*.sqlite
+*.db
+.DS_Store
+._*
+todos
