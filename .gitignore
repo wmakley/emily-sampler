@@ -9,6 +9,7 @@ curses
 hello_world
 if
 sdl_main
+todos
 *.o
 
 # build directories
