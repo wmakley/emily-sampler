@@ -63,6 +63,14 @@ func TestTodos(t *testing.T) {
 		}
 	})
 
+	t.Run("getTodoByIdNotFound", func(t *testing.T) {
+		url := "/todos/99999999"
+		resp, _ := Get(url, t)
+
+		assertNotFound(resp, t)
+		assertJson(resp, t)
+	})
+
 	t.Run("createTodo", func(t *testing.T) {
 		url := "/todos"
 		body := "{\"thing\":\"Test Todo\"}"
@@ -125,6 +133,17 @@ func TestTodos(t *testing.T) {
 		}
 	})
 
+	t.Run("updateTodoNotFound", func(t *testing.T) {
+		createTestTodo(t)
+		url := "/todos/99999999"
+		body := "{\"thing\":\"Updated Todo\"}"
+
+		resp, _ := SendTestHttpRequest("PATCH", url, body, t)
+
+		assertNotFound(resp, t)
+		assertJson(resp, t)
+	})
+
 	t.Run("completeTodo", func(t *testing.T) {
 		todo := createTestTodo(t)
 		if todo.CompletedAt != nil {
@@ -162,6 +181,15 @@ func TestTodos(t *testing.T) {
 		}
 	})
 
+	t.Run("completeTodoNotFound", func(t *testing.T) {
+		url := "/todos/999999/check"
+
+		resp, _ := SendTestHttpRequest("PATCH", url, "", t)
+
+		assertNotFound(resp, t)
+		assertJson(resp, t)
+	})
+
 	t.Run("deleteTodo", func(t *testing.T) {
 		todo := createTestTodo(t)
 		url := fmt.Sprintf("/todos/%d", todo.ID)
@@ -190,6 +218,14 @@ func TestTodos(t *testing.T) {
 				t.Error("Expected output of /todos to no longer include the deleted Todo")
 			}
 		}
+	})
+
+	t.Run("deleteTodoNotFound", func(t *testing.T) {
+		url := "/todos/9999999"
+		resp, _ := SendTestHttpRequest("DELETE", url, "", t)
+
+		assertNotFound(resp, t)
+		assertJson(resp, t)
 	})
 }
 
@@ -274,6 +310,12 @@ func normalizeUrl(url string) string {
 func assertSuccess(resp *http.Response, t *testing.T) {
 	if resp.StatusCode != 200 {
 		t.Error("Status code is not 200")
+	}
+}
+
+func assertNotFound(resp *http.Response, t *testing.T) {
+	if resp.StatusCode != 404 {
+		t.Error("Status code is not 404")
 	}
 }
 

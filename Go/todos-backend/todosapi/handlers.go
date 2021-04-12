@@ -64,7 +64,7 @@ func deleteTodo(w http.ResponseWriter, r *http.Request) {
 	err := db.Transaction(func(tx *gorm.DB) error {
 		var todo Todo
 
-		if err := tx.Find(&todo, key).Error; err != nil {
+		if err := tx.First(&todo, key).Error; err != nil {
 			return err
 		}
 
@@ -75,7 +75,11 @@ func deleteTodo(w http.ResponseWriter, r *http.Request) {
 		return nil
 	})
 	if err != nil {
-		internalServerError(err, w, r)
+		if err == gorm.ErrRecordNotFound {
+			notFound("Todo", key, w, r)
+		} else {
+			internalServerError(err, w, r)
+		}
 		return
 	}
 
@@ -92,7 +96,7 @@ func updateTodo(w http.ResponseWriter, r *http.Request) {
 
 	var todo Todo
 	err := db.Transaction(func(tx *gorm.DB) error {
-		if err := db.Find(&todo, key).Error; err != nil {
+		if err := db.First(&todo, key).Error; err != nil {
 			return err
 		}
 
@@ -122,7 +126,7 @@ func completeTodo(w http.ResponseWriter, r *http.Request) {
 
 	var todo Todo
 	err := db.Transaction(func(tx *gorm.DB) error {
-		if err := db.Find(&todo, key).Error; err != nil {
+		if err := db.First(&todo, key).Error; err != nil {
 			return err
 		}
 
