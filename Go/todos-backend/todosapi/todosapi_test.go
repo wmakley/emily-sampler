@@ -19,13 +19,21 @@ var (
 
 func TestTodos(t *testing.T) {
 	testRecordCounter = 0
+
 	dbFile := "../testdata/todos_test.sqlite"
-	os.Remove(dbFile)
+	err := os.Remove(dbFile)
+	if err != nil && !os.IsNotExist(err) {
+		t.Fatal("Error deleting test database:", err)
+	}
+
 	ConnectToDB(dbFile)
 	AutoMigrate()
+
 	handler := NewRouter()
+
 	testServer = httptest.NewServer(handler)
 	defer testServer.Close()
+
 	testClient = testServer.Client()
 
 	t.Run("listTodos", func(t *testing.T) {
