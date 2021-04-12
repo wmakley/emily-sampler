@@ -11,13 +11,13 @@ import (
 )
 
 var (
-	server  *httptest.Server
-	client  *http.Client
-	counter int
+	server   *httptest.Server
+	client   *http.Client
+	_counter int
 )
 
 func TestTodos(t *testing.T) {
-	counter = 0
+	_counter = 0
 	ConnectToDB("../testdata/todos_test.sqlite")
 	AutoMigrate()
 	handler := TodosRouter()
@@ -28,17 +28,16 @@ func TestTodos(t *testing.T) {
 	t.Run("listTodos", func(t *testing.T) {
 		createTestTodo(t)
 
-		url := fmt.Sprintf("%s/todos", server.URL)
+		url := "/todos"
 		resp, body := Get(url, t)
 
 		assertSuccess(resp, t)
 		assertJson(resp, t)
-		if !strings.HasPrefix(body, "[") {
-			t.Error("body is not a JSON array")
-		}
+		assertJsonArray(body, t)
 
 		var todos []Todo
-		json.NewDecoder(strings.NewReader(body)).Decode(&todos)
+		json.Unmarshal(body, &todos)
+		// json.NewDecoder(strings.NewReader(body)).Decode(&todos)
 
 		if len(todos) == 0 {
 			t.Error("Todos array is empty")
@@ -49,26 +48,87 @@ func TestTodos(t *testing.T) {
 		testTodo := createTestTodo(t)
 		// t.Logf("test todo %+v", testTodo)
 
-		url := fmt.Sprintf("%s/todos/%d", server.URL, testTodo.ID)
+		url := fmt.Sprintf("/todos/%d", testTodo.ID)
 		resp, body := Get(url, t)
 
 		assertSuccess(resp, t)
 		assertJson(resp, t)
-		if !strings.HasPrefix(body, "{") {
-			t.Error("body is not a JSON object")
-		}
+		assertJsonObject(body, t)
 
 		var responseTodo Todo
-		json.NewDecoder(strings.NewReader(body)).Decode(&responseTodo)
+		json.Unmarshal(body, &responseTodo)
+		// json.NewDecoder(strings.NewReader(body)).Decode(&responseTodo)
 		if responseTodo.ID != testTodo.ID {
 			t.Error("response todo has unexpected ID")
+		}
+	})
+
+	t.Run("createTodo", func(t *testing.T) {
+		url := "/todos"
+		body := "{\"thing\":\"Test Todo\"}"
+		resp, respBody := SendTestHttpRequest("POST", url, body, t)
+
+		assertSuccess(resp, t)
+		assertJson(resp, t)
+		// assertJsonObject(respBody, t)
+
+		var responseTodo Todo
+		if err := json.Unmarshal(respBody, &responseTodo); err != nil {
+			t.Fatal(err.Error())
+		}
+		// json.NewDecoder(strings.NewReader(body)).Decode(&responseTodo)
+
+		if responseTodo.ID <= 0 {
+			t.Errorf("response todo has invalid ID: %+v", responseTodo)
+		}
+
+		if responseTodo.Thing != "Test Todo" {
+			t.Errorf("response todo has unexpected 'Thing' value: %s", responseTodo.Thing)
+		}
+
+		if responseTodo.CompletedAt != nil {
+			t.Error("response todo should not be completed")
+		}
+	})
+
+	t.Run("updateTodo", func(t *testing.T) {
+		todo := createTestTodo(t)
+		url := fmt.Sprintf("/todos/%d", todo.ID)
+		body := "{\"thing\":\"Updated Todo\"}"
+
+		resp, respBody := SendTestHttpRequest("PATCH", url, body, t)
+
+		assertSuccess(resp, t)
+		assertJson(resp, t)
+
+		var responseTodo Todo
+		if err := json.Unmarshal(respBody, &responseTodo); err != nil {
+			t.Fatal(err.Error())
+		}
+
+		t.Logf("response todo: %+v", responseTodo)
+
+		if responseTodo.ID != todo.ID {
+			t.Error("response todo ID does not match original ID")
+		}
+
+		if responseTodo.Thing != "Updated Todo" {
+			t.Error("response todo 'thing' json does not match user input")
+		}
+
+		if err := db.Find(&responseTodo, todo.ID).Error; err != nil {
+			t.Fatalf("Error loading updated Todo: %s", err.Error())
+		}
+
+		if responseTodo.Thing != "Updated Todo" {
+			t.Error("response todo 'thing' was not updated")
 		}
 	})
 }
 
 func createTestTodo(t *testing.T) Todo {
-	todo := Todo{Thing: fmt.Sprintf("Test Todo %d", counter)}
-	counter++
+	todo := Todo{Thing: fmt.Sprintf("Test Todo %d", _counter)}
+	_counter++
 	if err := db.Save(&todo).Error; err != nil {
 		t.Fatal(err.Error())
 	}
@@ -76,25 +136,60 @@ func createTestTodo(t *testing.T) Todo {
 	return todo
 }
 
-func Get(url string, t *testing.T) (*http.Response, string) {
+func Get(url string, t *testing.T) (*http.Response, []byte) {
+	url = normalizeUrl(url)
+
 	t.Log("GET", url)
 	resp, err := client.Get(url)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
 
-	bodyBytes, err := io.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	resp.Body.Close()
 	if err != nil {
 		t.Fatal(err.Error())
 	}
-	body := strings.TrimSpace(string(bodyBytes))
 
-	t.Log("Status Code:", resp.StatusCode)
-	t.Log("Content-Type:", resp.Header.Get("Content-Type"))
-	t.Log("Body:", body)
+	t.Log("Response Status Code:", resp.StatusCode)
+	t.Log("Response Content-Type:", resp.Header.Get("Content-Type"))
+	t.Log("Response Body:", respBody)
 
-	return resp, body
+	return resp, respBody
+}
+
+func SendTestHttpRequest(method string, url string, body string, t *testing.T) (*http.Response, []byte) {
+	url = normalizeUrl(url)
+	t.Log(method, url)
+
+	req, err := http.NewRequest(method, url, strings.NewReader(body))
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	resp, err := client.Do(req)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	responseBodyBytes, err := io.ReadAll(resp.Body)
+	resp.Body.Close()
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	t.Log("Response Status Code:", resp.StatusCode)
+	t.Log("Response Content-Type:", resp.Header.Get("Content-Type"))
+	t.Log("Response Body:", responseBodyBytes)
+
+	return resp, responseBodyBytes
+}
+
+func normalizeUrl(url string) string {
+	if !strings.HasPrefix(url, server.URL) {
+		return fmt.Sprintf("%s%s", server.URL, url)
+	}
+	return url
 }
 
 func assertSuccess(resp *http.Response, t *testing.T) {
@@ -106,5 +201,17 @@ func assertSuccess(resp *http.Response, t *testing.T) {
 func assertJson(resp *http.Response, t *testing.T) {
 	if resp.Header.Get("Content-Type") != "application/json; charset=utf-8" {
 		t.Error("Content-Type is not 'application/json'")
+	}
+}
+
+func assertJsonArray(body []byte, t *testing.T) {
+	if !strings.HasPrefix(string(body), "[") {
+		t.Error("body is not a JSON array")
+	}
+}
+
+func assertJsonObject(body []byte, t *testing.T) {
+	if !strings.HasPrefix(string(body), "{") {
+		t.Error("body is not a JSON object")
 	}
 }
