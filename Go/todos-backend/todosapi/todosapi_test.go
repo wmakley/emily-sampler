@@ -124,13 +124,82 @@ func TestTodos(t *testing.T) {
 			t.Error("response todo 'thing' was not updated")
 		}
 	})
+
+	t.Run("completeTodo", func(t *testing.T) {
+		todo := createTestTodo(t)
+		if todo.CompletedAt != nil {
+			t.Fatal("test todo should not have started completed")
+		}
+
+		url := fmt.Sprintf("/todos/%d/check", todo.ID)
+
+		resp, respBody := SendTestHttpRequest("PATCH", url, "", t)
+
+		assertSuccess(resp, t)
+		assertJson(resp, t)
+
+		var responseTodo Todo
+		if err := json.Unmarshal(respBody, &responseTodo); err != nil {
+			t.Fatal(err)
+		}
+
+		t.Logf("response todo: %+v", responseTodo)
+
+		if responseTodo.ID != todo.ID {
+			t.Error("response todo ID does not match original ID")
+		}
+
+		if responseTodo.CompletedAt == nil {
+			t.Error("response todo was not marked as completed")
+		}
+
+		if err := db.Find(&responseTodo, todo.ID).Error; err != nil {
+			t.Fatal("Error loading updated Todo:", err)
+		}
+
+		if responseTodo.CompletedAt == nil {
+			t.Error("response todo was not marked as completed")
+		}
+	})
+
+	t.Run("deleteTodo", func(t *testing.T) {
+		todo := createTestTodo(t)
+		url := fmt.Sprintf("/todos/%d", todo.ID)
+
+		resp, respBody := SendTestHttpRequest("DELETE", url, "", t)
+
+		if resp.StatusCode != http.StatusNoContent {
+			t.Error("response is not 'No Content'")
+		}
+
+		if len(respBody) != 0 {
+			t.Error("response body is not empty")
+		}
+
+		resp2, _ := Get(url, t)
+		if resp2.StatusCode != 404 {
+			t.Errorf("Expected status of looking up todo %d to be 404 after deletion", todo.ID)
+		}
+
+		_, listBody := Get("/todos", t)
+		var listTodosResult []Todo
+		json.Unmarshal(listBody, &listTodosResult)
+
+		for _, li := range listTodosResult {
+			if li.ID == todo.ID {
+				t.Error("Expected output of /todos to no longer include the deleted Todo")
+			}
+		}
+	})
 }
 
 func createTestTodo(t *testing.T) Todo {
-	todo := Todo{Thing: fmt.Sprintf("Test Todo %d", testRecordCounter)}
 	testRecordCounter++
+
+	todo := Todo{Thing: fmt.Sprintf("Test Todo %d", testRecordCounter)}
+
 	if err := db.Save(&todo).Error; err != nil {
-		t.Fatal(err.Error())
+		t.Fatal(err)
 	}
 
 	return todo
@@ -153,9 +222,19 @@ func Get(url string, t *testing.T) (*http.Response, []byte) {
 
 	t.Log("Response Status Code:", resp.StatusCode)
 	t.Log("Response Content-Type:", resp.Header.Get("Content-Type"))
-	t.Log("Response Body:", respBody)
+	// t.Log("Response Body:", respBody)
 
 	return resp, respBody
+}
+
+func GetJSON(url string, v *interface{}, t *testing.T) *http.Response {
+	resp, body := Get(url, t)
+
+	if err := json.Unmarshal(body, v); err != nil {
+		t.Fatal("Err un-marshalling body JSON:", err)
+	}
+
+	return resp
 }
 
 func SendTestHttpRequest(method string, url string, body string, t *testing.T) (*http.Response, []byte) {
@@ -180,7 +259,7 @@ func SendTestHttpRequest(method string, url string, body string, t *testing.T) (
 
 	t.Log("Response Status Code:", resp.StatusCode)
 	t.Log("Response Content-Type:", resp.Header.Get("Content-Type"))
-	t.Log("Response Body:", responseBodyBytes)
+	// t.Log("Response Body:", responseBodyBytes)
 
 	return resp, responseBodyBytes
 }

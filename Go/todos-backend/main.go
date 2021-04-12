@@ -22,6 +22,7 @@ func main() {
 
 	router := todosapi.NewRouter()
 
-	fmt.Println("Listening on port", listenPort)
-	log.Fatal(http.ListenAndServe(fmt.Sprintf("%s:%d", listenAddr, listenPort), router))
+	listenAddrFull := fmt.Sprintf("%s:%d", listenAddr, listenPort)
+	fmt.Println("Listening on address: ", listenAddrFull)
+	log.Fatal(http.ListenAndServe(listenAddrFull, router))
 }
