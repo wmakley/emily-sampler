@@ -62,14 +62,13 @@ func deleteTodo(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("deleteTodo", key)
 
 	err := db.Transaction(func(tx *gorm.DB) error {
-		var todo Todo
-
-		if err := tx.First(&todo, key).Error; err != nil {
-			return err
+		result := tx.Delete(&Todo{}, key)
+		if result.Error != nil {
+			return result.Error
 		}
 
-		if err := tx.Delete(&todo).Error; err != nil {
-			return err
+		if result.RowsAffected == 0 {
+			return gorm.ErrRecordNotFound
 		}
 
 		return nil
@@ -153,12 +152,12 @@ func completeTodo(w http.ResponseWriter, r *http.Request) {
 
 func notFound(objectName string, id string, w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotFound)
-	body := ErrorJson{404, fmt.Sprintf("%s with ID %s not found.", objectName, id)}
+	body := ErrorJson{http.StatusNotFound, fmt.Sprintf("%s with ID %s not found.", objectName, id)}
 	json.NewEncoder(w).Encode(body)
 }
 
 func internalServerError(err error, w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusInternalServerError)
-	body := ErrorJson{500, err.Error()}
+	body := ErrorJson{http.StatusInternalServerError, err.Error()}
 	json.NewEncoder(w).Encode(body)
 }

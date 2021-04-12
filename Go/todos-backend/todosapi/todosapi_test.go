@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"strings"
 	"testing"
 )
@@ -18,7 +19,9 @@ var (
 
 func TestTodos(t *testing.T) {
 	testRecordCounter = 0
-	ConnectToDB("../testdata/todos_test.sqlite")
+	dbFile := "../testdata/todos_test.sqlite"
+	os.Remove(dbFile)
+	ConnectToDB(dbFile)
 	AutoMigrate()
 	handler := NewRouter()
 	testServer = httptest.NewServer(handler)
