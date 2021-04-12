@@ -1,4 +1,4 @@
-package internal
+package todosapi
 
 import (
 	"encoding/json"
@@ -11,19 +11,19 @@ import (
 )
 
 var (
-	server   *httptest.Server
-	client   *http.Client
-	_counter int
+	testServer        *httptest.Server
+	testClient        *http.Client
+	testRecordCounter int
 )
 
 func TestTodos(t *testing.T) {
-	_counter = 0
+	testRecordCounter = 0
 	ConnectToDB("../testdata/todos_test.sqlite")
 	AutoMigrate()
-	handler := TodosRouter()
-	server = httptest.NewServer(handler)
-	defer server.Close()
-	client = server.Client()
+	handler := NewRouter()
+	testServer = httptest.NewServer(handler)
+	defer testServer.Close()
+	testClient = testServer.Client()
 
 	t.Run("listTodos", func(t *testing.T) {
 		createTestTodo(t)
@@ -127,8 +127,8 @@ func TestTodos(t *testing.T) {
 }
 
 func createTestTodo(t *testing.T) Todo {
-	todo := Todo{Thing: fmt.Sprintf("Test Todo %d", _counter)}
-	_counter++
+	todo := Todo{Thing: fmt.Sprintf("Test Todo %d", testRecordCounter)}
+	testRecordCounter++
 	if err := db.Save(&todo).Error; err != nil {
 		t.Fatal(err.Error())
 	}
@@ -140,7 +140,7 @@ func Get(url string, t *testing.T) (*http.Response, []byte) {
 	url = normalizeUrl(url)
 
 	t.Log("GET", url)
-	resp, err := client.Get(url)
+	resp, err := testClient.Get(url)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -167,7 +167,7 @@ func SendTestHttpRequest(method string, url string, body string, t *testing.T) (
 		t.Fatal(err.Error())
 	}
 
-	resp, err := client.Do(req)
+	resp, err := testClient.Do(req)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -186,8 +186,8 @@ func SendTestHttpRequest(method string, url string, body string, t *testing.T) (
 }
 
 func normalizeUrl(url string) string {
-	if !strings.HasPrefix(url, server.URL) {
-		return fmt.Sprintf("%s%s", server.URL, url)
+	if !strings.HasPrefix(url, testServer.URL) {
+		return fmt.Sprintf("%s%s", testServer.URL, url)
 	}
 	return url
 }

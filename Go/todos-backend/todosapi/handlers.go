@@ -1,4 +1,4 @@
-package internal
+package todosapi
 
 import (
 	"encoding/json"

@@ -9,7 +9,7 @@ curses
 hello_world
 if
 sdl_main
-todos
+/Go/todos-backend/todos
 *.o
 
 # build directories
@@ -24,3 +24,7 @@ C++/plunger/**/Makefile
 
 # Packages
 node_modules
+
+# Data Files
+*.sqlite
+*.db

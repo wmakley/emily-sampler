@@ -1,11 +1,11 @@
 .PHONY: clean test
-INTERNAL_SRCS:=$(shell find internal -type f -name '*.go' -and -not -name '*_test.go')
+GO_SRCS:=$(shell find . -type f -name '*.go' -and -not -name '*_test.go')
 
-todos: cmd/todos/main.go $(INTERNAL_SRCS)
+todos: $(GO_SRCS)
 	go build -o $@ $<
 
 clean:
 	rm -f todos
 
 test:
-	go test ./internal
+	go test ./todosapi

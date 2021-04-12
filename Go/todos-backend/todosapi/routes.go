@@ -1,4 +1,4 @@
-package internal
+package todosapi
 
 import (
 	"net/http"
@@ -6,7 +6,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func TodosRouter() http.Handler {
+func NewRouter() http.Handler {
 	router := mux.NewRouter().StrictSlash(true)
 	router.Use(middleware)
 	router.HandleFunc("/todos", listTodos).Methods(http.MethodGet)

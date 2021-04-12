@@ -1,4 +1,4 @@
-package internal
+package todosapi
 
 import (
 	"fmt"
@@ -15,10 +15,13 @@ func ConnectToDB(sqliteFileName string) {
 	var err error
 	db, err = gorm.Open(sqlite.Open(sqliteFileName), &gorm.Config{})
 	if err != nil {
-		panic(fmt.Sprintf("Failed to connect database, Error: %s", err.Error()))
+		panic(fmt.Sprint("Failed to connect database, Error: ", err))
 	}
 }
 
 func AutoMigrate() {
-	db.AutoMigrate(&Todo{})
+	err := db.AutoMigrate(&Todo{})
+	if err != nil {
+		panic(fmt.Sprint("Error migrating database: ", err))
+	}
 }
