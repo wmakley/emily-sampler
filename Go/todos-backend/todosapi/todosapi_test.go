@@ -26,8 +26,12 @@ func TestTodos(t *testing.T) {
 		t.Fatal("Error deleting test database:", err)
 	}
 
-	ConnectToDB(dbFile)
-	AutoMigrate()
+	if err := ConnectToDB(dbFile); err != nil {
+		t.Fatal("Error connecting to test database: ", err)
+	}
+	if err := AutoMigrate(); err != nil {
+		t.Fatal("Error migrating test database: ", err)
+	}
 
 	handler := NewRouter()
 
