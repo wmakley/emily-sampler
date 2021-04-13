@@ -153,7 +153,8 @@ func completeTodo(w http.ResponseWriter, r *http.Request) {
 
 // A JSON encoding failure is basically unrecoverable and should never happen
 func encodeJsonOrPanic(v interface{}, w io.Writer) {
-	if err := json.NewEncoder(w).Encode(v); err != nil {
+	err := json.NewEncoder(w).Encode(v)
+	if err != nil {
 		panic(err)
 	}
 }
@@ -161,17 +162,11 @@ func encodeJsonOrPanic(v interface{}, w io.Writer) {
 func notFound(objectName string, id string, w http.ResponseWriter) {
 	w.WriteHeader(http.StatusNotFound)
 	body := ErrorJson{http.StatusNotFound, fmt.Sprintf("%s with ID %s not found.", objectName, id)}
-	if err := json.NewEncoder(w).Encode(body); err != nil {
-		// Should never happen, pretty much unrecoverable
-		panic(err)
-	}
+	encodeJsonOrPanic(body, w)
 }
 
 func internalServerError(err error, w http.ResponseWriter) {
 	w.WriteHeader(http.StatusInternalServerError)
 	body := ErrorJson{http.StatusInternalServerError, err.Error()}
-	if err := json.NewEncoder(w).Encode(body); err != nil {
-		// Should never happen, pretty much unrecoverable
-		panic(err)
-	}
+	encodeJsonOrPanic(body, w)
 }
