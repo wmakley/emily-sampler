@@ -21,7 +21,7 @@ func listTodos(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	encodeJsonOrPanic(todos, w)
+	encodeJsonOrPanic(w, todos)
 }
 
 func getTodoById(w http.ResponseWriter, r *http.Request) {
@@ -32,14 +32,14 @@ func getTodoById(w http.ResponseWriter, r *http.Request) {
 	var todo Todo
 	if err := db.First(&todo, key).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
-			notFound("Todo", key, w)
+			notFound(w, "Todo", key)
 		} else {
 			internalServerError(err, w)
 		}
 		return
 	}
 
-	encodeJsonOrPanic(todo, w)
+	encodeJsonOrPanic(w, todo)
 }
 
 func createTodo(w http.ResponseWriter, r *http.Request) {
@@ -54,7 +54,7 @@ func createTodo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	encodeJsonOrPanic(todo, w)
+	encodeJsonOrPanic(w, todo)
 }
 
 func deleteTodo(w http.ResponseWriter, r *http.Request) {
@@ -76,7 +76,7 @@ func deleteTodo(w http.ResponseWriter, r *http.Request) {
 	})
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
-			notFound("Todo", key, w)
+			notFound(w, "Todo", key)
 		} else {
 			internalServerError(err, w)
 		}
@@ -109,14 +109,14 @@ func updateTodo(w http.ResponseWriter, r *http.Request) {
 	})
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
-			notFound("Todo", key, w)
+			notFound(w, "Todo", key)
 		} else {
 			internalServerError(err, w)
 		}
 		return
 	}
 
-	encodeJsonOrPanic(todo, w)
+	encodeJsonOrPanic(w, todo)
 }
 
 func completeTodo(w http.ResponseWriter, r *http.Request) {
@@ -141,32 +141,32 @@ func completeTodo(w http.ResponseWriter, r *http.Request) {
 	})
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
-			notFound("Todo", key, w)
+			notFound(w, "Todo", key)
 		} else {
 			internalServerError(err, w)
 		}
 		return
 	}
 
-	encodeJsonOrPanic(todo, w)
+	encodeJsonOrPanic(w, todo)
 }
 
 // A JSON encoding failure is basically unrecoverable and should never happen
-func encodeJsonOrPanic(v interface{}, w io.Writer) {
+func encodeJsonOrPanic(w io.Writer, v interface{}) {
 	err := json.NewEncoder(w).Encode(v)
 	if err != nil {
-		panic(err)
+		panic("Error encoding JSON: " + err.Error())
 	}
 }
 
-func notFound(objectName string, id string, w http.ResponseWriter) {
+func notFound(w http.ResponseWriter, objectName string, id string) {
 	w.WriteHeader(http.StatusNotFound)
 	body := ErrorJson{http.StatusNotFound, fmt.Sprintf("%s with ID %s not found.", objectName, id)}
-	encodeJsonOrPanic(body, w)
+	encodeJsonOrPanic(w, body)
 }
 
 func internalServerError(err error, w http.ResponseWriter) {
 	w.WriteHeader(http.StatusInternalServerError)
 	body := ErrorJson{http.StatusInternalServerError, err.Error()}
-	encodeJsonOrPanic(body, w)
+	encodeJsonOrPanic(w, body)
 }
