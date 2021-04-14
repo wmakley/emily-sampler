@@ -44,7 +44,12 @@ func getTodoById(w http.ResponseWriter, r *http.Request) {
 
 func createTodo(w http.ResponseWriter, r *http.Request) {
 	var todo Todo
-	json.NewDecoder(r.Body).Decode(&todo)
+
+	if err := strictDecodeJson(r.Body, &todo); err != nil {
+		badRequest(w, err.Error())
+		return
+	}
+
 	fmt.Printf("createTodo %+v\n", todo)
 
 	todo.CompletedAt = nil
@@ -89,8 +94,12 @@ func deleteTodo(w http.ResponseWriter, r *http.Request) {
 func updateTodo(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	key := vars["id"]
+
 	var jsonTodo Todo
-	json.NewDecoder(r.Body).Decode(&jsonTodo)
+	if err := strictDecodeJson(r.Body, &jsonTodo); err != nil {
+		badRequest(w, err.Error())
+		return
+	}
 
 	fmt.Println("updateTodo", key, jsonTodo)
 
@@ -151,12 +160,24 @@ func completeTodo(w http.ResponseWriter, r *http.Request) {
 	encodeJsonOrPanic(w, todo)
 }
 
+func strictDecodeJson(r io.Reader, v interface{}) error {
+	decoder := json.NewDecoder(r)
+	decoder.DisallowUnknownFields()
+	return decoder.Decode(v)
+}
+
 // A JSON encoding failure is basically unrecoverable and should never happen
 func encodeJsonOrPanic(w io.Writer, v interface{}) {
 	err := json.NewEncoder(w).Encode(v)
 	if err != nil {
 		panic("Error encoding JSON: " + err.Error())
 	}
+}
+
+func badRequest(w http.ResponseWriter, msg string) {
+	w.WriteHeader(http.StatusBadRequest)
+	body := ErrorJson{http.StatusBadRequest, msg}
+	encodeJsonOrPanic(w, body)
 }
 
 func notFound(w http.ResponseWriter, objectName string, id string) {

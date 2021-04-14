@@ -114,6 +114,21 @@ func TestTodos(t *testing.T) {
 		}
 	})
 
+	t.Run("createInvalidTodo", func(t *testing.T) {
+		body := `{
+			"thing": "New Todo",
+			"badProperty": "ASDF"
+		}`
+
+		resp, respBody := SendTestHttpRequest("POST", "/todos", body, t)
+
+		t.Log("Response Body: ", string(respBody))
+
+		if resp.StatusCode != 400 {
+			t.Error("Status code for bad input is not 400")
+		}
+	})
+
 	t.Run("updateTodo", func(t *testing.T) {
 		todo := createTestTodo(t)
 		url := fmt.Sprintf("/todos/%d", todo.ID)
