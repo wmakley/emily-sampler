@@ -11,7 +11,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func listTodos(w http.ResponseWriter, r *http.Request) {
+func ListTodos(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("listTodos")
 
 	var todos []Todo
@@ -24,7 +24,7 @@ func listTodos(w http.ResponseWriter, r *http.Request) {
 	encodeJsonOrPanic(w, todos)
 }
 
-func getTodoById(w http.ResponseWriter, r *http.Request) {
+func GetTodoById(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	key := vars["id"]
 	fmt.Println("getTodoById", key)
@@ -42,7 +42,7 @@ func getTodoById(w http.ResponseWriter, r *http.Request) {
 	encodeJsonOrPanic(w, todo)
 }
 
-func createTodo(w http.ResponseWriter, r *http.Request) {
+func CreateTodo(w http.ResponseWriter, r *http.Request) {
 	var todo Todo
 
 	if err := strictDecodeJson(r.Body, &todo); err != nil {
@@ -62,7 +62,7 @@ func createTodo(w http.ResponseWriter, r *http.Request) {
 	encodeJsonOrPanic(w, todo)
 }
 
-func deleteTodo(w http.ResponseWriter, r *http.Request) {
+func DeleteTodo(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	key := vars["id"]
 	fmt.Println("deleteTodo", key)
@@ -91,7 +91,7 @@ func deleteTodo(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
-func updateTodo(w http.ResponseWriter, r *http.Request) {
+func UpdateTodo(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	key := vars["id"]
 
@@ -128,7 +128,7 @@ func updateTodo(w http.ResponseWriter, r *http.Request) {
 	encodeJsonOrPanic(w, todo)
 }
 
-func completeTodo(w http.ResponseWriter, r *http.Request) {
+func CompleteTodo(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	key := vars["id"]
 	fmt.Println("completeTodo", key)
@@ -141,6 +141,42 @@ func completeTodo(w http.ResponseWriter, r *http.Request) {
 
 		timestamp := time.Now()
 		todo.CompletedAt = &timestamp
+
+		if err := db.Save(&todo).Error; err != nil {
+			return err
+		}
+
+		return nil
+	})
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			notFound(w, "Todo", key)
+		} else {
+			internalServerError(err, w)
+		}
+		return
+	}
+
+	encodeJsonOrPanic(w, todo)
+}
+
+func ToggleTodo(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	key := vars["id"]
+	fmt.Println("toggleTodo", key)
+
+	var todo Todo
+	err := db.Transaction(func(tx *gorm.DB) error {
+		if err := db.First(&todo, key).Error; err != nil {
+			return err
+		}
+
+		if todo.CompletedAt == nil {
+			timestamp := time.Now()
+			todo.CompletedAt = &timestamp
+		} else {
+			todo.CompletedAt = nil
+		}
 
 		if err := db.Save(&todo).Error; err != nil {
 			return err

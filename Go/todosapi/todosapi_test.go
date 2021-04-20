@@ -9,6 +9,7 @@ import (
 	"os"
 	"strings"
 	"testing"
+	"time"
 )
 
 var (
@@ -33,7 +34,7 @@ func TestTodos(t *testing.T) {
 		t.Fatal("Error migrating test database: ", err)
 	}
 
-	handler := NewRouter()
+	handler := NewRouter("/api")
 
 	testServer = httptest.NewServer(handler)
 	defer testServer.Close()
@@ -43,7 +44,7 @@ func TestTodos(t *testing.T) {
 	t.Run("listTodos", func(t *testing.T) {
 		createTestTodo(t)
 
-		url := "/todos"
+		url := "/api/todos"
 		resp, body := Get(url, t)
 
 		assertSuccess(resp, t)
@@ -63,7 +64,7 @@ func TestTodos(t *testing.T) {
 		testTodo := createTestTodo(t)
 		// t.Logf("test todo %+v", testTodo)
 
-		url := fmt.Sprintf("/todos/%d", testTodo.ID)
+		url := fmt.Sprintf("/api/todos/%d", testTodo.ID)
 		resp, body := Get(url, t)
 
 		assertSuccess(resp, t)
@@ -79,7 +80,7 @@ func TestTodos(t *testing.T) {
 	})
 
 	t.Run("getTodoByIdNotFound", func(t *testing.T) {
-		url := "/todos/99999999"
+		url := "/api/todos/99999999"
 		resp, _ := Get(url, t)
 
 		assertNotFound(resp, t)
@@ -87,7 +88,7 @@ func TestTodos(t *testing.T) {
 	})
 
 	t.Run("createTodo", func(t *testing.T) {
-		url := "/todos"
+		url := "/api/todos"
 		body := "{\"thing\":\"Test Todo\"}"
 		resp, respBody := SendTestHttpRequest("POST", url, body, t)
 
@@ -120,7 +121,7 @@ func TestTodos(t *testing.T) {
 			"badProperty": "ASDF"
 		}`
 
-		resp, respBody := SendTestHttpRequest("POST", "/todos", body, t)
+		resp, respBody := SendTestHttpRequest("POST", "/api/todos", body, t)
 
 		t.Log("Response Body: ", string(respBody))
 
@@ -131,7 +132,7 @@ func TestTodos(t *testing.T) {
 
 	t.Run("updateTodo", func(t *testing.T) {
 		todo := createTestTodo(t)
-		url := fmt.Sprintf("/todos/%d", todo.ID)
+		url := fmt.Sprintf("/api/todos/%d", todo.ID)
 		body := "{\"thing\":\"Updated Todo\"}"
 
 		resp, respBody := SendTestHttpRequest("PATCH", url, body, t)
@@ -165,7 +166,7 @@ func TestTodos(t *testing.T) {
 
 	t.Run("updateTodoNotFound", func(t *testing.T) {
 		createTestTodo(t)
-		url := "/todos/99999999"
+		url := "/api/todos/99999999"
 		body := "{\"thing\":\"Updated Todo\"}"
 
 		resp, _ := SendTestHttpRequest("PATCH", url, body, t)
@@ -180,7 +181,7 @@ func TestTodos(t *testing.T) {
 			t.Fatal("test todo should not have started completed")
 		}
 
-		url := fmt.Sprintf("/todos/%d/check", todo.ID)
+		url := fmt.Sprintf("/api/todos/%d/check", todo.ID)
 
 		resp, respBody := SendTestHttpRequest("PATCH", url, "", t)
 
@@ -212,7 +213,7 @@ func TestTodos(t *testing.T) {
 	})
 
 	t.Run("completeTodoNotFound", func(t *testing.T) {
-		url := "/todos/999999/check"
+		url := "/api/todos/999999/check"
 
 		resp, _ := SendTestHttpRequest("PATCH", url, "", t)
 
@@ -222,7 +223,7 @@ func TestTodos(t *testing.T) {
 
 	t.Run("deleteTodo", func(t *testing.T) {
 		todo := createTestTodo(t)
-		url := fmt.Sprintf("/todos/%d", todo.ID)
+		url := fmt.Sprintf("/api/todos/%d", todo.ID)
 
 		resp, respBody := SendTestHttpRequest("DELETE", url, "", t)
 
@@ -239,23 +240,55 @@ func TestTodos(t *testing.T) {
 			t.Errorf("Expected status of looking up todo %d to be 404 after deletion", todo.ID)
 		}
 
-		_, listBody := Get("/todos", t)
+		_, listBody := Get("/api/todos", t)
 		var listTodosResult []Todo
 		json.Unmarshal(listBody, &listTodosResult)
 
 		for _, li := range listTodosResult {
 			if li.ID == todo.ID {
-				t.Error("Expected output of /todos to no longer include the deleted Todo")
+				t.Error("Expected output of /api/todos to no longer include the deleted Todo")
 			}
 		}
 	})
 
 	t.Run("deleteTodoNotFound", func(t *testing.T) {
-		url := "/todos/9999999"
+		url := "/api/todos/9999999"
 		resp, _ := SendTestHttpRequest("DELETE", url, "", t)
 
 		assertNotFound(resp, t)
 		assertJson(resp, t)
+	})
+
+	t.Run("toggleIncompleteTodo", func(t *testing.T) {
+		todo := createTestTodo(t)
+		url := fmt.Sprintf("/api/todos/%d/toggle", todo.ID)
+
+		resp, body := SendTestHttpRequest("PATCH", url, "", t)
+
+		assertSuccess(resp, t)
+
+		var updatedTodo Todo
+		json.Unmarshal(body, &updatedTodo)
+
+		if updatedTodo.CompletedAt == nil {
+			t.Error("Expected toggled todo .CompletedAt to have been filled")
+		}
+	})
+
+	t.Run("toggleCompleteTodo", func(t *testing.T) {
+		todo := createCompletedTestTodo(t)
+		url := fmt.Sprintf("/api/todos/%d/toggle", todo.ID)
+
+		resp, body := SendTestHttpRequest("PATCH", url, "", t)
+
+		assertSuccess(resp, t)
+
+		var updatedTodo Todo
+		json.Unmarshal(body, &updatedTodo)
+
+		if updatedTodo.CompletedAt != nil {
+			t.Error("Expected toggled todo .CompletedAt to be nil")
+		}
 	})
 }
 
@@ -263,6 +296,22 @@ func createTestTodo(t *testing.T) Todo {
 	testRecordCounter++
 
 	todo := Todo{Thing: fmt.Sprintf("Test Todo %d", testRecordCounter)}
+
+	if err := db.Save(&todo).Error; err != nil {
+		t.Fatal(err)
+	}
+
+	return todo
+}
+
+func createCompletedTestTodo(t *testing.T) Todo {
+	testRecordCounter++
+
+	completedAt := time.Now()
+	todo := Todo{
+		Thing:       fmt.Sprintf("Test Todo %d", testRecordCounter),
+		CompletedAt: &completedAt,
+	}
 
 	if err := db.Save(&todo).Error; err != nil {
 		t.Fatal(err)

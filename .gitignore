@@ -9,12 +9,14 @@ curses
 hello_world
 if
 sdl_main
-/Go/todos-backend/todos
+/Go/todos
 *.o
 
 # build directories
 build
 target
+dist
+.cache
 
 # Logs
 *.log
