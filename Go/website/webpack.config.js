@@ -1,6 +1,8 @@
 const path = require('path');
+const webpack = require('webpack');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const { VueLoaderPlugin } = require('vue-loader')
+const { VueLoaderPlugin } = require('vue-loader');
 
 module.exports = (env, argv) => {
   // Fixes tailwind purging:
@@ -14,7 +16,10 @@ module.exports = (env, argv) => {
   }
 
   const plugins = [
-    new VueLoaderPlugin()
+    new VueLoaderPlugin(),
+    new HtmlWebpackPlugin({
+      template: './src/index.html'
+    })
   ];
 
   if (argv.mode === 'production') {
@@ -24,7 +29,7 @@ module.exports = (env, argv) => {
   return {
     mode: 'production',
 
-    entry: './src/main.js',
+    entry: './src/index.js',
 
     output: {
       path: path.resolve(__dirname, 'dist'),
@@ -42,7 +47,22 @@ module.exports = (env, argv) => {
         {
           test: /\.vue$/,
           loader: 'vue-loader'
-        }
+        },
+        // {
+        //   test: /\.html$/i,
+        //   type: 'asset/resource',
+        //   generator: {
+        //     filename: '[name][ext]',
+        //   },
+        // },
+        // {
+        //   test: /\.html$/i,
+        //   use: ['extract-loader', 'html-loader'],
+        // },
+        // {
+        //   test: /\.html$/i,
+        //   use: 'html-loader',
+        // },
       ],
     },
 
