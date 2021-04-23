@@ -6,11 +6,16 @@
       @click="toggleTodo"
       class="mr-2"
     />
-    <span v-if="isEditing">
+    <form v-if="isEditing" @submit.prevent="doneEditing" class="inline-block">
       <input type="text" :value="todo.thing" />
-      <button type="button" @click="doneEditing">Done</button>
-    </span>
-    <span v-else @click="startEditing">{{ todo.thing }}</span>
+      <button type="submit">Done</button>
+    </form>
+    <span
+      v-else
+      @click="startEditing"
+      :class="isSaving ? 'text-gray-300' : ''"
+      >{{ todo.thing }}</span
+    >
     <button type="button" @click="deleteTodo" class="ml-2">Delete</button>
   </li>
 </template>
@@ -33,6 +38,7 @@ export default {
     return {
       isEditing: false,
       isDeleting: false,
+      isSaving: false,
     };
   },
 
@@ -69,14 +75,28 @@ export default {
     },
 
     startEditing() {
-      if (this.isDeleting) {
+      if (this.isDeleting || this.isSaving) {
         return;
       }
       this.isEditing = true;
     },
 
-    doneEditing() {
+    async doneEditing() {
+      if (this.isDeleting) {
+        return;
+      }
+
+      this.isSaving = true;
       this.isEditing = false;
+
+      this.todo.thing = this.todo.thing.trim();
+
+      await this.todosStore.updateTodo({
+        id: this.todo.id,
+        thing: this.todo.thing,
+      });
+
+      this.isSaving = false;
     },
   },
 };

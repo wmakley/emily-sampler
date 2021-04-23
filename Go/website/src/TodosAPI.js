@@ -36,7 +36,7 @@ export function createTodo(todo) {
  * @returns {object} the updated todo
  */
 export async function updateTodo(todo) {
-  if (!todo.id) {
+  if (typeof todo.id !== "number" || isNaN(todo.id)) {
     throw new Error("todo does not have id");
   }
 
@@ -97,16 +97,14 @@ export function toggleTodo(id) {
 export function validateTodo(todo) {
   const errors = []
 
-  if (!todo) {
-    errors.push("todo must be an object");
-  }
-
-  if (!todo.thing) {
-    errors.push("todo.thing is a required field");
+  if (typeof todo !== "object" || !todo) {
+    errors.push("todo must be a non-null object");
   }
 
   if (typeof todo.thing !== "string") {
-    errors.push("todo.thing must be a non-empty string")
+    errors.push("todo.thing must be a string");
+  } else if (todo.thing.trim() === "") {
+    errors.push("todo.thing must not be blank");
   }
 
   return [errors.length === 0, errors]

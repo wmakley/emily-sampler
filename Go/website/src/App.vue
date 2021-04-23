@@ -15,6 +15,7 @@ export default {
   inject: ["todosStore"],
 
   mounted() {
+    console.log("app mounted");
     if (!this.todosStore.loaded) {
       this.todosStore.fetchTodos();
     }

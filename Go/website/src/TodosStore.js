@@ -1,4 +1,4 @@
-import { reactive } from 'vue';
+import { reactive, isReactive, toRaw } from 'vue';
 import * as TodosAPI from './TodosAPI';
 
 export default class {
@@ -12,6 +12,7 @@ export default class {
 
   async fetchTodos() {
     console.log('fetch todos');
+
     this.loaded = true;
     const todos = await TodosAPI.listTodos();
     this.state.todos = todos;
@@ -34,16 +35,12 @@ export default class {
     return toggledTodo;
   }
 
-  async createTodo(thing) {
-    console.log("create todo:", thing);
-    const trimmed = thing.trim();
-    if (trimmed === "") {
-      return false;
+  async createTodo(todo) {
+    if (isReactive(todo)) {
+      todo = {...toRaw(todo)};
     }
 
-    const todo = {
-      thing: trimmed,
-    };
+    console.log("create todo:", thing);
 
     const createdTodo = await TodosAPI.createTodo(todo);
 
@@ -52,11 +49,34 @@ export default class {
     return createdTodo;
   }
 
+  async updateTodo(todo) {
+    if (isReactive(todo)) {
+      todo = {...toRaw(todo)};
+    }
+
+    console.log("update todo:", todo);
+
+    const updatedTodo = await TodosAPI.updateTodo(todo);
+
+    this.state.todos = this.state.todos.map((oldTodo) => {
+      if (oldTodo.id === todo.id) {
+        return updatedTodo;
+      } else {
+        return oldTodo;
+      }
+    });
+
+    return updatedTodo;
+  }
+
   async deleteTodo(id) {
     console.log("delete todo:", id);
+
     const response = await TodosAPI.deleteTodo(id);
+
     // Delete the todo from the array by its ID in case the index is no longer valid
     this.state.todos = this.state.todos.filter((todo) => todo.id !== id);
+
     return true;
   }
 };
