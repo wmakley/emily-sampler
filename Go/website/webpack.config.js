@@ -3,13 +3,16 @@ const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const { VueLoaderPlugin } = require('vue-loader');
+const WebpackDevServer = require('webpack-dev-server');
 
 module.exports = (env, argv) => {
   // Fixes tailwind purging:
   process.env.NODE_ENV = argv.mode;
 
+  const isProduction = argv.mode === 'production';
+
   let cssLoaders;
-  if (argv.mode === 'production') {
+  if (isProduction) {
     cssLoaders = [MiniCssExtractPlugin.loader, "css-loader", "postcss-loader"]
   } else {
     cssLoaders = ["style-loader", "css-loader", "postcss-loader"]
@@ -19,6 +22,12 @@ module.exports = (env, argv) => {
     new VueLoaderPlugin(),
     new HtmlWebpackPlugin({
       template: './src/index.html'
+    }),
+    // Vue feature flags (shuts up warnings), see: https://github.com/vuejs/vue-next/tree/master/packages/vue#bundler-build-feature-flags
+    // Using defaults for now.
+    new webpack.DefinePlugin({
+      __VUE_OPTIONS_API__: JSON.stringify(true),
+      __VUE_PROD_DEVTOOLS__: JSON.stringify(false)
     })
   ];
 
@@ -48,21 +57,6 @@ module.exports = (env, argv) => {
           test: /\.vue$/,
           loader: 'vue-loader'
         },
-        // {
-        //   test: /\.html$/i,
-        //   type: 'asset/resource',
-        //   generator: {
-        //     filename: '[name][ext]',
-        //   },
-        // },
-        // {
-        //   test: /\.html$/i,
-        //   use: ['extract-loader', 'html-loader'],
-        // },
-        // {
-        //   test: /\.html$/i,
-        //   use: 'html-loader',
-        // },
       ],
     },
 
