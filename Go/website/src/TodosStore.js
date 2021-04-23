@@ -21,21 +21,10 @@ export default class {
   async toggleTodo(id) {
     console.log("toggle todo:", id);
 
-    const todo = this.state.todos.find(todo => todo.id === id);
-    if (!todo) {
-      throw new Error("todo index " + index + " doesn't exist");
-    }
-
-    if (todo.completedAt) {
-      todo.completedAt = null;
-    } else {
-      todo.completedAt = new Date();
-    }
-
-    const toggledTodo = await TodosAPI.toggleTodo(todo.id);
+    const toggledTodo = await TodosAPI.toggleTodo(id);
 
     this.state.todos = this.state.todos.map((oldTodo) => {
-      if (oldTodo.id === todo.id) {
+      if (oldTodo.id === id) {
         return toggledTodo;
       } else {
         return oldTodo;

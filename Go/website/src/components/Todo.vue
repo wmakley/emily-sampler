@@ -1,5 +1,5 @@
 <template>
-  <li>
+  <li :class="isDeleting ? 'text-gray-300' : ''">
     <input
       type="checkbox"
       :checked="isComplete"
@@ -23,7 +23,7 @@ export default {
     todo: {
       id: Number,
       thing: String,
-      completedAt: Date,
+      completedAt: String,
     },
   },
 
@@ -32,6 +32,7 @@ export default {
   data() {
     return {
       isEditing: false,
+      isDeleting: false,
     };
   },
 
@@ -43,14 +44,34 @@ export default {
 
   methods: {
     toggleTodo() {
+      if (this.isDeleting) {
+        return;
+      }
+
+      // Preemptively toggle it so user sees no delay
+      if (this.todo.completedAt) {
+        this.todo.completedAt = null;
+      } else {
+        this.todo.completedAt = new Date().toISOString();
+      }
+
       this.todosStore.toggleTodo(this.todo.id);
     },
 
-    deleteTodo() {
-      this.todosStore.deleteTodo(this.todo.id);
+    async deleteTodo() {
+      if (this.isDeleting) {
+        return;
+      }
+
+      this.isDeleting = true;
+      await this.todosStore.deleteTodo(this.todo.id);
+      this.isDeleting = false;
     },
 
     startEditing() {
+      if (this.isDeleting) {
+        return;
+      }
       this.isEditing = true;
     },
 

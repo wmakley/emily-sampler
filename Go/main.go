@@ -40,6 +40,7 @@ func main() {
 	// Have to make a custom handler because the default MUX precedence is based on length for some reason
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Printf("%s: %s\n", r.Method, r.RequestURI)
+
 		if strings.HasPrefix(r.RequestURI, "/api") {
 			if delayDuration > 0 {
 				time.Sleep(delayDuration)
