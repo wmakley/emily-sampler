@@ -1,7 +1,5 @@
-# Normal go commands work just fine. This simply provides an easy starting point
-# for those unfamiliar with go.
+.PHONY: clean test run watch
 
-.PHONY: clean test
 GO_SRCS:=$(shell find . -type f -name '*.go' -and -not -name '*_test.go')
 
 todos: $(GO_SRCS)
@@ -11,16 +9,10 @@ clean:
 	rm -f todos
 
 run: todos
-	./todos
-
-run-docker: todos
-	./todos -address 0.0.0.0 -delay 1000 -webpack-url http://webpack-dev-server:9000
+	./todos $(SERVER_FLAGS)
 
 watch:
 	reflex -s -r '\.go$$' make run
-
-watch-docker:
-	reflex -s -r '\.go$$' make run-docker
 
 test:
 	go test ./todosapi

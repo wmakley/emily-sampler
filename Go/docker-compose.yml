@@ -5,11 +5,11 @@ services:
     build: .
     ports:
       - "8080:8080"
-    command: sh -c 'rm -fv ./todos && exec make watch-docker'
+    command: sh -c 'rm -fv ./todos && exec make watch'
+    environment:
+      SERVER_FLAGS: "-address 0.0.0.0 -delay 1000 -webpack-url http://webpack-dev-server:9000"
     volumes:
       - .:/app
-    links:
-      - webpack-dev-server
 
   webpack-dev-server:
     build: ./website
