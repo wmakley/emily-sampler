@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strings"
 	"todos/todosapi"
 	"todos/webpack_proxy"
 )
@@ -27,12 +28,20 @@ func main() {
 		log.Fatal("Error migrating database:", err.Error())
 	}
 
-	router := todosapi.NewRouter("/api")
+	api := http.StripPrefix("/api", todosapi.NewRouter())
 	wpProxy := webpack_proxy.NewWebpackProxy(webpackPort)
-	router.HandleFunc("/", wpProxy)
-	router.HandleFunc("/{asset}", wpProxy)
+
+	// Have to make a custom handler because the default MUX precedence is based on length for some reason
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Printf("%s: %s\n", r.Method, r.RequestURI)
+		if strings.HasPrefix(r.RequestURI, "/api") {
+			api.ServeHTTP(w, r)
+		} else {
+			wpProxy(w, r)
+		}
+	})
 
 	listenAddrFull := fmt.Sprintf("%s:%d", listenAddr, listenPort)
 	fmt.Println("Listening on", listenAddrFull)
-	log.Fatal(http.ListenAndServe(listenAddrFull, router))
+	log.Fatal(http.ListenAndServe(listenAddrFull, nil))
 }

@@ -34,7 +34,7 @@ func TestTodos(t *testing.T) {
 		t.Fatal("Error migrating test database: ", err)
 	}
 
-	handler := NewRouter("/api")
+	handler := NewRouter()
 
 	testServer = httptest.NewServer(handler)
 	defer testServer.Close()
@@ -44,7 +44,7 @@ func TestTodos(t *testing.T) {
 	t.Run("listTodos", func(t *testing.T) {
 		createTestTodo(t)
 
-		url := "/api/todos"
+		url := "/todos"
 		resp, body := Get(url, t)
 
 		assertSuccess(resp, t)
@@ -64,7 +64,7 @@ func TestTodos(t *testing.T) {
 		testTodo := createTestTodo(t)
 		// t.Logf("test todo %+v", testTodo)
 
-		url := fmt.Sprintf("/api/todos/%d", testTodo.ID)
+		url := fmt.Sprintf("/todos/%d", testTodo.ID)
 		resp, body := Get(url, t)
 
 		assertSuccess(resp, t)
@@ -80,7 +80,7 @@ func TestTodos(t *testing.T) {
 	})
 
 	t.Run("getTodoByIdNotFound", func(t *testing.T) {
-		url := "/api/todos/99999999"
+		url := "/todos/99999999"
 		resp, _ := Get(url, t)
 
 		assertNotFound(resp, t)
@@ -88,7 +88,7 @@ func TestTodos(t *testing.T) {
 	})
 
 	t.Run("createTodo", func(t *testing.T) {
-		url := "/api/todos"
+		url := "/todos"
 		body := "{\"thing\":\"Test Todo\"}"
 		resp, respBody := SendTestHttpRequest("POST", url, body, t)
 
@@ -121,7 +121,7 @@ func TestTodos(t *testing.T) {
 			"badProperty": "ASDF"
 		}`
 
-		resp, respBody := SendTestHttpRequest("POST", "/api/todos", body, t)
+		resp, respBody := SendTestHttpRequest("POST", "/todos", body, t)
 
 		t.Log("Response Body: ", string(respBody))
 
@@ -132,7 +132,7 @@ func TestTodos(t *testing.T) {
 
 	t.Run("updateTodo", func(t *testing.T) {
 		todo := createTestTodo(t)
-		url := fmt.Sprintf("/api/todos/%d", todo.ID)
+		url := fmt.Sprintf("/todos/%d", todo.ID)
 		body := "{\"thing\":\"Updated Todo\"}"
 
 		resp, respBody := SendTestHttpRequest("PATCH", url, body, t)
@@ -166,7 +166,7 @@ func TestTodos(t *testing.T) {
 
 	t.Run("updateTodoNotFound", func(t *testing.T) {
 		createTestTodo(t)
-		url := "/api/todos/99999999"
+		url := "/todos/99999999"
 		body := "{\"thing\":\"Updated Todo\"}"
 
 		resp, _ := SendTestHttpRequest("PATCH", url, body, t)
@@ -181,7 +181,7 @@ func TestTodos(t *testing.T) {
 			t.Fatal("test todo should not have started completed")
 		}
 
-		url := fmt.Sprintf("/api/todos/%d/check", todo.ID)
+		url := fmt.Sprintf("/todos/%d/check", todo.ID)
 
 		resp, respBody := SendTestHttpRequest("PATCH", url, "", t)
 
@@ -213,7 +213,7 @@ func TestTodos(t *testing.T) {
 	})
 
 	t.Run("completeTodoNotFound", func(t *testing.T) {
-		url := "/api/todos/999999/check"
+		url := "/todos/999999/check"
 
 		resp, _ := SendTestHttpRequest("PATCH", url, "", t)
 
@@ -223,7 +223,7 @@ func TestTodos(t *testing.T) {
 
 	t.Run("deleteTodo", func(t *testing.T) {
 		todo := createTestTodo(t)
-		url := fmt.Sprintf("/api/todos/%d", todo.ID)
+		url := fmt.Sprintf("/todos/%d", todo.ID)
 
 		resp, respBody := SendTestHttpRequest("DELETE", url, "", t)
 
@@ -240,7 +240,7 @@ func TestTodos(t *testing.T) {
 			t.Errorf("Expected status of looking up todo %d to be 404 after deletion", todo.ID)
 		}
 
-		_, listBody := Get("/api/todos", t)
+		_, listBody := Get("/todos", t)
 		var listTodosResult []Todo
 		json.Unmarshal(listBody, &listTodosResult)
 
@@ -252,7 +252,7 @@ func TestTodos(t *testing.T) {
 	})
 
 	t.Run("deleteTodoNotFound", func(t *testing.T) {
-		url := "/api/todos/9999999"
+		url := "/todos/9999999"
 		resp, _ := SendTestHttpRequest("DELETE", url, "", t)
 
 		assertNotFound(resp, t)
@@ -261,7 +261,7 @@ func TestTodos(t *testing.T) {
 
 	t.Run("toggleIncompleteTodo", func(t *testing.T) {
 		todo := createTestTodo(t)
-		url := fmt.Sprintf("/api/todos/%d/toggle", todo.ID)
+		url := fmt.Sprintf("/todos/%d/toggle", todo.ID)
 
 		resp, body := SendTestHttpRequest("PATCH", url, "", t)
 
@@ -277,7 +277,7 @@ func TestTodos(t *testing.T) {
 
 	t.Run("toggleCompleteTodo", func(t *testing.T) {
 		todo := createCompletedTestTodo(t)
-		url := fmt.Sprintf("/api/todos/%d/toggle", todo.ID)
+		url := fmt.Sprintf("/todos/%d/toggle", todo.ID)
 
 		resp, body := SendTestHttpRequest("PATCH", url, "", t)
 

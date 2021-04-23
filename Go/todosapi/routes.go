@@ -6,10 +6,8 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func NewRouter(prefix string) *mux.Router {
-	router := mux.NewRouter().StrictSlash(false)
-
-	api := router.PathPrefix(prefix).Subrouter()
+func NewRouter() *mux.Router {
+	api := mux.NewRouter().StrictSlash(false)
 	api.Use(jsonContentType)
 	api.HandleFunc("/todos", ListTodos).Methods(http.MethodGet)
 	api.HandleFunc("/todos/{id}", GetTodoById).Methods(http.MethodGet)
@@ -18,8 +16,7 @@ func NewRouter(prefix string) *mux.Router {
 	api.HandleFunc("/todos/{id}", DeleteTodo).Methods(http.MethodDelete)
 	api.HandleFunc("/todos/{id}/check", CompleteTodo).Methods(http.MethodPatch)
 	api.HandleFunc("/todos/{id}/toggle", ToggleTodo).Methods(http.MethodPatch)
-
-	return router
+	return api
 }
 
 func jsonContentType(next http.Handler) http.Handler {
