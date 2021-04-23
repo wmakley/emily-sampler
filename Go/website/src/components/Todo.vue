@@ -7,7 +7,7 @@
       class="mr-2"
     />
     <form v-if="isEditing" @submit.prevent="doneEditing" class="inline-block">
-      <input type="text" v-model="todo.thing" />
+      <input type="text" v-model="todo.thing" ref="input" />
       <button type="submit">Done</button>
     </form>
     <span
@@ -79,6 +79,10 @@ export default {
         return;
       }
       this.isEditing = true;
+
+      this.$nextTick(() => {
+        this.$refs.input.focus()
+      })
     },
 
     async doneEditing() {

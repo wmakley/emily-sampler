@@ -36,6 +36,10 @@ export default {
       });
       this.newThing = "";
       this.isSaving = false;
+
+      this.$nextTick(() => {
+        document.getElementById("new-task").focus();
+      })
     },
   },
 };
