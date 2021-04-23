@@ -5,10 +5,9 @@ services:
     build: .
     ports:
       - "8080:8080"
-    command: /app/todos -address 0.0.0.0 -delay 1000 -webpack-url http://webpack-dev-server:9000
+    command: sh -c 'rm -fv ./todos && exec make watch-docker'
     volumes:
-      - ./data:/app/data
-      - ./testdata:/app/testdata
+      - .:/app
     links:
       - webpack-dev-server
 
