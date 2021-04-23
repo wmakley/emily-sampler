@@ -7,11 +7,7 @@ import (
 	"net/url"
 )
 
-func NewWebpackProxy(port int) http.HandlerFunc {
-	origin, err := url.Parse(fmt.Sprintf("http://localhost:%d/", port))
-	if err != nil {
-		panic("Error parsing url: " + err.Error())
-	}
+func NewWebpackProxy(origin *url.URL) http.HandlerFunc {
 
 	director := func(req *http.Request) {
 		req.Header.Add("X-Forwarded-Host", req.Host)

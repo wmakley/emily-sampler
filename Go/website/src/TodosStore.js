@@ -40,7 +40,7 @@ export default class {
       todo = {...toRaw(todo)};
     }
 
-    console.log("create todo:", thing);
+    console.log("create todo:", todo);
 
     const createdTodo = await TodosAPI.createTodo(todo);
 

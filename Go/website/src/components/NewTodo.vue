@@ -31,7 +31,9 @@ export default {
       }
 
       this.isSaving = true;
-      await this.todosStore.createTodo(this.newThing);
+      await this.todosStore.createTodo({
+        thing: this.newThing
+      });
       this.newThing = "";
       this.isSaving = false;
     },

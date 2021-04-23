@@ -7,6 +7,8 @@ COPY . /app
 WORKDIR /app
 
 RUN go mod download
+
+# RUN make test
 RUN make
 
 # 2nd stage
@@ -16,4 +18,5 @@ RUN mkdir -p /app/data
 WORKDIR /app
 COPY --from=0 /app/todos /app/todos
 
+EXPOSE 8080
 CMD ["/app/todos"]

@@ -1,0 +1,21 @@
+version: "3.9"
+
+services:
+  todos:
+    build: .
+    ports:
+      - "8080:8080"
+    command: /app/todos -delay 1000 -webpack-url http://webpack-dev-server:9000
+    volumes:
+      - ./data:/app/data
+      - ./testdata:/app/testdata
+    links:
+      - webpack-dev-server
+
+  webpack-dev-server:
+    build: ./website
+    ports:
+      - "9000:9000"
+    volumes:
+      - ./website/src:/app/src
+      - ./website/dist:/app/dist
