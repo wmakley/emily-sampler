@@ -12,7 +12,7 @@ import (
 )
 
 func ListTodos(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("listTodos")
+	fmt.Println("ListTodos")
 
 	var todos []Todo
 
@@ -27,7 +27,7 @@ func ListTodos(w http.ResponseWriter, r *http.Request) {
 func GetTodoById(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	key := vars["id"]
-	fmt.Println("getTodoById", key)
+	fmt.Println("GetTodoById id:", key)
 
 	var todo Todo
 	if err := db.First(&todo, key).Error; err != nil {
@@ -50,7 +50,7 @@ func CreateTodo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Printf("createTodo %+v\n", todo)
+	fmt.Printf("CreateTodo body: %+v\n", todo)
 
 	todo.CompletedAt = nil
 
@@ -65,7 +65,7 @@ func CreateTodo(w http.ResponseWriter, r *http.Request) {
 func DeleteTodo(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	key := vars["id"]
-	fmt.Println("deleteTodo", key)
+	fmt.Println("DeleteTodo id:", key)
 
 	err := db.Transaction(func(tx *gorm.DB) error {
 		result := tx.Delete(&Todo{}, key)
@@ -101,7 +101,7 @@ func UpdateTodo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println("updateTodo", key, jsonTodo)
+	fmt.Printf("UpdateTodo id=%s body=%+v\n", key, jsonTodo)
 
 	var todo Todo
 	err := db.Transaction(func(tx *gorm.DB) error {
@@ -131,7 +131,7 @@ func UpdateTodo(w http.ResponseWriter, r *http.Request) {
 func CompleteTodo(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	key := vars["id"]
-	fmt.Println("completeTodo", key)
+	fmt.Println("CompleteTodo id:", key)
 
 	var todo Todo
 	err := db.Transaction(func(tx *gorm.DB) error {
@@ -163,7 +163,7 @@ func CompleteTodo(w http.ResponseWriter, r *http.Request) {
 func ToggleTodo(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	key := vars["id"]
-	fmt.Println("toggleTodo", key)
+	fmt.Println("ToggleTodo id:", key)
 
 	var todo Todo
 	err := db.Transaction(func(tx *gorm.DB) error {

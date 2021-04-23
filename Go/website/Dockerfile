@@ -4,8 +4,7 @@ RUN mkdir /app
 WORKDIR /app
 COPY . /app/
 
-RUN npm -g install npm
-RUN npm install
+RUN npm ci
 
 EXPOSE 9000
 CMD ["npm", "run", "dev"]

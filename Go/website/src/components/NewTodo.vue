@@ -7,6 +7,7 @@
       type="text"
       id="new-task"
       v-model="newThing"
+      ref="input"
       placeholder="New Task"
     />
     <button type="submit" class="ml-2" :disabled="isSaving">Add</button>
@@ -38,7 +39,7 @@ export default {
       this.isSaving = false;
 
       this.$nextTick(() => {
-        document.getElementById("new-task").focus();
+        this.$refs.input.focus();
       })
     },
   },
