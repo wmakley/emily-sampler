@@ -1,6 +1,6 @@
 <template>
   <div class="container m-4 mx-auto border-4 rounded shadow-lg">
-    <h1 class="m-4">Todos</h1>
+    <h1 class="m-4 text-lg">Tasks</h1>
     <ul class="m-4">
       <Todo v-for="todo in list" :key="todo.id" :todo="todo" />
     </ul>
@@ -16,10 +16,7 @@ export default {
   name: "TodoList",
 
   props: {
-    list: {
-      type: Array,
-      default: [],
-    },
+    list: Array,
   },
 
   components: {

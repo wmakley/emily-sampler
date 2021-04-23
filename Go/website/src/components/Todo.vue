@@ -1,12 +1,17 @@
 <template>
   <li>
-    <input type="checkbox" :checked="isComplete" @click="toggleTodo" />
+    <input
+      type="checkbox"
+      :checked="isComplete"
+      @click="toggleTodo"
+      class="mr-2"
+    />
     <span v-if="isEditing">
       <input type="text" :value="todo.thing" />
       <button type="button" @click="doneEditing">Done</button>
     </span>
     <span v-else @click="startEditing">{{ todo.thing }}</span>
-    <button type="button" @click="deleteTodo">Delete</button>
+    <button type="button" @click="deleteTodo" class="ml-2">Delete</button>
   </li>
 </template>
 
