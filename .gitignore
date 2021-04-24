@@ -9,7 +9,7 @@ curses
 hello_world
 if
 sdl_main
-/Go/todos
+/todos/api/todos
 *.o
 
 # build directories
