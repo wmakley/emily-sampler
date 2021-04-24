@@ -1,6 +1,14 @@
+# OS & Text Editor Cruft
 .DS_Store
 ._*
+~*
+*~
 
+# Version Control
+.git
+
+# Dependencies
 node_modules
 
+# Caches
 .cache

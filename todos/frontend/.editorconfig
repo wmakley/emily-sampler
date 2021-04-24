@@ -10,6 +10,3 @@ end_of_line = lf
 
 [Makefile]
 indent_style = tab
-
-[*.go]
-indent_style = tab

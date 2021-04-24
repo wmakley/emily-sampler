@@ -1,11 +1,15 @@
-*.sqlite
-*.db
+# OS & Text Editor Cruft
 .DS_Store
 ._*
+~*
+*~
 
-node_modules
+# Version Control
+.git
 
-# Build output
+# Database files
+*.sqlite
+*.db
+
+# Built binaries
 ./todos
-
-./website
