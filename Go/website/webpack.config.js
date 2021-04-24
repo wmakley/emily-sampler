@@ -26,6 +26,7 @@ module.exports = (env, argv) => {
     // Vue feature flags (shuts up warnings), see: https://github.com/vuejs/vue-next/tree/master/packages/vue#bundler-build-feature-flags
     // Using defaults for now.
     new webpack.DefinePlugin({
+      __API_ENDPOINT__: JSON.stringify("http://localhost:8080/api"),
       __VUE_OPTIONS_API__: JSON.stringify(true),
       __VUE_PROD_DEVTOOLS__: JSON.stringify(false)
     })

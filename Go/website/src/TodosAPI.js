@@ -1,10 +1,12 @@
+const ENDPOINT = __API_ENDPOINT__;
+
 /**
  * Fetch all todos.
  *
  * @returns {Promise<Array<Todo>>}
  */
 export function listTodos() {
-  return fetch("/api/todos").then(r => r.json())
+  return fetch(ENDPOINT + "/todos").then(r => r.json())
 }
 
 /**
@@ -20,7 +22,7 @@ export function createTodo(todo) {
 
   const body = JSON.stringify(todo);
 
-  return fetch("/api/todos", {
+  return fetch(ENDPOINT + "/todos", {
     method: "POST",
     body: body,
     headers: {
@@ -47,7 +49,7 @@ export async function updateTodo(todo) {
 
   const body = JSON.stringify(todo);
 
-  const response = await fetch("/api/todos/" + encodeURIComponent(todo.id), {
+  const response = await fetch(ENDPOINT + "/todos/" + encodeURIComponent(todo.id), {
     method: "PATCH",
     body: body,
     headers: {
@@ -68,7 +70,7 @@ export function deleteTodo(id) {
     throw new Error("id must be a number")
   }
 
-  return fetch("/api/todos/" + encodeURIComponent(id), {
+  return fetch(ENDPOINT + "/todos/" + encodeURIComponent(id), {
     method: "DELETE"
   });
 }
@@ -83,7 +85,7 @@ export function toggleTodo(id) {
     throw new Error("id must be a number")
   }
 
-  return fetch("/api/todos/" + encodeURIComponent(id) + "/toggle", {
+  return fetch(ENDPOINT + "/todos/" + encodeURIComponent(id) + "/toggle", {
     method: "PATCH"
   }).then(r => r.json());
 }

@@ -7,7 +7,6 @@ COPY . /app/
 WORKDIR /app
 
 RUN go mod download
-RUN go get github.com/cespare/reflex
 
 RUN make
 CMD ["make", "watch-docker"]
