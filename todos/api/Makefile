@@ -12,7 +12,7 @@ run: todos
 	./todos $(SERVER_FLAGS)
 
 watch:
-	reflex -s -r '\.go$$' -R '^website' make run
+	reflex -s -r '\.go$$' make run
 
 test:
 	go test ./todosapi

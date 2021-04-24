@@ -1,0 +1,21 @@
+version: "3.9"
+
+services:
+  api:
+    build: ./api
+    ports:
+      - "8080:8080"
+    command: make watch
+    environment:
+      SERVER_FLAGS: "-address 0.0.0.0 -delay 1000"
+    volumes:
+      - ./api:/app
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "9000:9000"
+    volumes:
+      - ./frontend/src:/app/src
+      - ./frontend/dist:/app/dist
+      - ./frontend/.vscode:/app/.vscode
