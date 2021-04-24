@@ -81,8 +81,8 @@ export default {
       this.isEditing = true;
 
       this.$nextTick(() => {
-        this.$refs.input.focus()
-      })
+        this.$refs.input.focus();
+      });
     },
 
     async doneEditing() {
