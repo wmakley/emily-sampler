@@ -9,6 +9,7 @@
       v-model="newThing"
       ref="input"
       placeholder="New Task"
+      maxlength="255"
     />
     <button type="submit" class="ml-2" :disabled="isSaving">Add</button>
   </form>
@@ -33,14 +34,14 @@ export default {
 
       this.isSaving = true;
       await this.todosStore.createTodo({
-        thing: this.newThing
+        thing: this.newThing,
       });
       this.newThing = "";
       this.isSaving = false;
 
       this.$nextTick(() => {
         this.$refs.input.focus();
-      })
+      });
     },
   },
 };

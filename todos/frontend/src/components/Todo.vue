@@ -7,7 +7,7 @@
       class="mr-2"
     />
     <form v-if="isEditing" @submit.prevent="doneEditing" class="inline-block">
-      <input type="text" v-model="todo.thing" ref="input" />
+      <input type="text" v-model="todo.thing" ref="input" maxlength="255" />
       <button type="submit">Done</button>
     </form>
     <span

@@ -105,8 +105,13 @@ export function validateTodo(todo) {
 
   if (typeof todo.thing !== "string") {
     errors.push("todo.thing must be a string");
-  } else if (todo.thing.trim() === "") {
-    errors.push("todo.thing must not be blank");
+  } else {
+    if (todo.thing.trim() === "") {
+      errors.push("todo.thing must not be blank");
+    }
+    if (todo.thing.length >= 255) {
+      errors.push("todo may not be more than 255 characters long");
+    }
   }
 
   return [errors.length === 0, errors]

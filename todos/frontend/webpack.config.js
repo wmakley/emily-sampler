@@ -3,7 +3,6 @@ const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const { VueLoaderPlugin } = require('vue-loader');
-const WebpackDevServer = require('webpack-dev-server');
 
 module.exports = (env, argv) => {
   // Fixes tailwind purging:
@@ -23,10 +22,10 @@ module.exports = (env, argv) => {
     new HtmlWebpackPlugin({
       template: './src/index.html'
     }),
-    // Vue feature flags (shuts up warnings), see: https://github.com/vuejs/vue-next/tree/master/packages/vue#bundler-build-feature-flags
-    // Using defaults for now.
     new webpack.DefinePlugin({
       __API_ENDPOINT__: JSON.stringify("http://localhost:8080/api"),
+      // Vue feature flags (shuts up warnings), see: https://github.com/vuejs/vue-next/tree/master/packages/vue#bundler-build-feature-flags
+      // Using defaults for now.
       __VUE_OPTIONS_API__: JSON.stringify(true),
       __VUE_PROD_DEVTOOLS__: JSON.stringify(false)
     })
