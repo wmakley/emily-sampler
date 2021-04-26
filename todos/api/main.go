@@ -32,7 +32,9 @@ func main() {
 	delayDuration := time.Duration(delay) * time.Millisecond
 	api := http.StripPrefix("/api", todosapi.NewRouter())
 
-	// Have to make a custom handler because the default MUX precedence is based on shortest length for some reason
+	// Have to make a custom handler because the default MUX precedence is based
+	// on shortest length for some reason, so a "/api" route is always ignored
+	// in favor of "/" if "/" exists.
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Printf("%s: %s\n", r.Method, r.RequestURI)
 
