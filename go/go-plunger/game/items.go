@@ -2,35 +2,35 @@ package goplunger
 
 import "fmt"
 
-type SimpleObject struct {
+type SimpleItem struct {
 	name string
 }
 
-func (o SimpleObject) Name() string {
+func (o SimpleItem) Name() string {
 	return o.name
 }
 
-func (o SimpleObject) Usable(g *Game) bool {
+func (o SimpleItem) Usable(g *Game) bool {
 	return false
 }
 
-func (o SimpleObject) Use(g *Game) {
+func (o SimpleItem) Use(g *Game) {
 	fmt.Println("That doesn't seem to do anything here.")
 }
 
-func NewSimpleObject(name string) Object {
-	return &SimpleObject{
+func NewSimpleItem(name string) Item {
+	return &SimpleItem{
 		name: name,
 	}
 }
 
 type Plunger struct {
-	SimpleObject
+	SimpleItem
 }
 
-func NewPlunger() Object {
+func NewPlunger() Item {
 	return &Plunger{
-		SimpleObject{
+		SimpleItem{
 			name: "Plunger",
 		},
 	}
@@ -63,12 +63,12 @@ func (p *Plunger) Use(g *Game) {
 }
 
 type PlungerWithRat struct {
-	SimpleObject
+	SimpleItem
 }
 
-func NewPlungerWithRat() Object {
+func NewPlungerWithRat() Item {
 	return &PlungerWithRat{
-		SimpleObject{
+		SimpleItem{
 			name: "Plunger with rat",
 		},
 	}
@@ -84,7 +84,7 @@ func (p *PlungerWithRat) Use(g *Game) {
 	}
 
 	g.Player.Inventory.RemoveItem(p)
-	sunBathingRat := NewSimpleObject("Sun-bathing rat")
+	sunBathingRat := NewSimpleItem("Sun-bathing rat")
 	g.CurrentRoom.Inventory().AddItem(sunBathingRat)
 
 	fmt.Printf(

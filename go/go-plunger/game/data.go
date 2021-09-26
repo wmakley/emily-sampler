@@ -32,7 +32,7 @@ type MenuItem interface {
 	Action() func(g *Game)
 }
 
-type Object interface {
+type Item interface {
 	Name() string
 	Usable(g *Game) bool
 	Use(g *Game)

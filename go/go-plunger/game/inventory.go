@@ -1,18 +1,18 @@
 package goplunger
 
 type Inventory struct {
-	Objects []Object
+	Items []Item
 }
 
 func (i Inventory) Size() int {
-	return len(i.Objects)
+	return len(i.Items)
 }
 
-func (i *Inventory) AddItem(item Object) {
-	i.Objects = append(i.Objects, item)
+func (i *Inventory) AddItem(item Item) {
+	i.Items = append(i.Items, item)
 }
 
-func (i *Inventory) RemoveItemIndex(index int) Object {
+func (i *Inventory) RemoveItemIndex(index int) Item {
 	if index < 0 || index >= i.Size() {
 		panic(ErrOutOfRange{
 			Input: index,
@@ -21,17 +21,17 @@ func (i *Inventory) RemoveItemIndex(index int) Object {
 		})
 	}
 
-	var removed Object
+	var removed Item
 
-	newSlice := make([]Object, 0, len(i.Objects)-1)
-	for j, item := range i.Objects {
+	newSlice := make([]Item, 0, len(i.Items)-1)
+	for j, item := range i.Items {
 		if j != index {
 			newSlice = append(newSlice, item)
 		} else {
 			removed = item
 		}
 	}
-	i.Objects = newSlice
+	i.Items = newSlice
 
 	if removed == nil {
 		panic("no item was removed")
@@ -40,22 +40,22 @@ func (i *Inventory) RemoveItemIndex(index int) Object {
 	return removed
 }
 
-func (i *Inventory) RemoveItem(itemToRemove Object) Object {
+func (i *Inventory) RemoveItem(itemToRemove Item) Item {
 	if itemToRemove == nil {
 		panic("itemToRemove must not be nil")
 	}
 
-	var removed Object
+	var removed Item
 
-	newSlice := make([]Object, 0, len(i.Objects)-1)
-	for _, item := range i.Objects {
+	newSlice := make([]Item, 0, len(i.Items)-1)
+	for _, item := range i.Items {
 		if item != itemToRemove {
 			newSlice = append(newSlice, item)
 		} else {
 			removed = item
 		}
 	}
-	i.Objects = newSlice
+	i.Items = newSlice
 
 	if removed == nil {
 		panic("no item was removed")

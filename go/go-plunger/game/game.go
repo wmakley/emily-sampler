@@ -75,13 +75,19 @@ func (g *Game) Start() {
 		if key == 'q' || key == 'Q' {
 			done = true
 		} else if key >= '0' && key <= '9' {
-			num, err := strconv.ParseInt(string(key), 10, 32)
+			num64, err := strconv.ParseInt(string(key), 10, 32)
 			if err != nil {
 				badInput(input)
 				continue
 			}
 
-			err = g.ExecuteMenuItem(int(num))
+			num := int(num64)
+			if num == 0 {
+				num = 10
+			}
+			num--
+
+			err = g.ExecuteMenuItem(num)
 			if err != nil {
 				fmt.Println(err.Error())
 			}
@@ -101,17 +107,17 @@ func badInput(input string) {
 }
 
 func (g *Game) RebuildMenu() {
-	g.MenuItems = make([]MenuItem, 0, len(g.CurrentRoom.Links())+g.CurrentRoom.Inventory().Size()+(len(g.Player.Objects)*2))
+	g.MenuItems = make([]MenuItem, 0, len(g.CurrentRoom.Links())+g.CurrentRoom.Inventory().Size()+(g.Player.Inventory.Size()*2))
 
 	for _, room := range g.CurrentRoom.Links() {
 		g.MenuItems = append(g.MenuItems, NewWalkToRoomMenuItem(room))
 	}
 
-	for _, roomItem := range g.CurrentRoom.Inventory().Objects {
+	for _, roomItem := range g.CurrentRoom.Inventory().Items {
 		g.MenuItems = append(g.MenuItems, NewPickupItemMenuItem(roomItem))
 	}
 
-	for _, playerItem := range g.Player.Inventory.Objects {
+	for _, playerItem := range g.Player.Inventory.Items {
 		if playerItem.Usable(g) {
 			g.MenuItems = append(g.MenuItems, NewUseItemMenuItem(playerItem))
 		}
@@ -147,15 +153,15 @@ func (g Game) Flag(key int) bool {
 }
 
 func (g *Game) ExecuteMenuItem(index int) error {
-	if index < 1 || index > len(g.MenuItems) {
+	if index < 0 || index >= len(g.MenuItems) {
 		return ErrOutOfRange{
 			Input: index,
 			Min:   0,
-			Max:   len(g.MenuItems),
+			Max:   len(g.MenuItems) - 1,
 		}
 	}
 
-	menuItem := g.MenuItems[index-1]
+	menuItem := g.MenuItems[index]
 	menuItem.Action()(g)
 
 	return nil
@@ -175,7 +181,7 @@ func (g *Game) DescribeRoom() {
 }
 
 func (g *Game) ListRoomObjects() {
-	objects := g.CurrentRoom.Inventory().Objects
+	objects := g.CurrentRoom.Inventory().Items
 	if len(objects) > 0 {
 		fmt.Print("\nObjects:\n\n")
 
@@ -211,21 +217,21 @@ func NewWalkToRoomMenuItem(room Room) MenuItem {
 	}
 }
 
-func (g *Game) PickupItem(itemToPickUp Object) {
+func (g *Game) PickupItem(itemToPickUp Item) {
 	item := g.CurrentRoom.Inventory().RemoveItem(itemToPickUp)
 	g.Player.Inventory.AddItem(item)
 	fmt.Printf("Picked up %s.\nYou now have a %s.\n", item.Name(), item.Name())
 	g.RoomInventoryChanged = true
 }
 
-func (g *Game) DropItem(itemToDrop Object) {
+func (g *Game) DropItem(itemToDrop Item) {
 	item := g.Player.Inventory.RemoveItem(itemToDrop)
 	g.CurrentRoom.Inventory().AddItem(item)
 	fmt.Printf("Dropped %s.\nYou no longer have a %s.\n", item.Name(), item.Name())
 	g.RoomInventoryChanged = true
 }
 
-func NewPickupItemMenuItem(item Object) MenuItem {
+func NewPickupItemMenuItem(item Item) MenuItem {
 	return &GenericMenuItem{
 		desc: fmt.Sprintf("Pick up %s", item.Name()),
 		action: func(g *Game) {
@@ -234,7 +240,7 @@ func NewPickupItemMenuItem(item Object) MenuItem {
 	}
 }
 
-func NewDropItemMenuItem(item Object) MenuItem {
+func NewDropItemMenuItem(item Item) MenuItem {
 	return &GenericMenuItem{
 		desc: fmt.Sprintf("Drop %s", item.Name()),
 		action: func(g *Game) {
@@ -243,7 +249,7 @@ func NewDropItemMenuItem(item Object) MenuItem {
 	}
 }
 
-func NewUseItemMenuItem(item Object) MenuItem {
+func NewUseItemMenuItem(item Item) MenuItem {
 	return &GenericMenuItem{
 		desc: fmt.Sprintf("Use %s", item.Name()),
 		action: func(g *Game) {
