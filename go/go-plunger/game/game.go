@@ -107,7 +107,7 @@ func badInput(input string) {
 }
 
 func (g *Game) RebuildMenu() {
-	g.MenuItems = make([]MenuItem, 0, len(g.CurrentRoom.Links())+g.CurrentRoom.Inventory().Size()+(g.Player.Inventory.Size()*2))
+	g.MenuItems = make([]MenuItem, 0, 10)
 
 	for _, room := range g.CurrentRoom.Links() {
 		g.MenuItems = append(g.MenuItems, NewWalkToRoomMenuItem(room))
@@ -122,6 +122,10 @@ func (g *Game) RebuildMenu() {
 			g.MenuItems = append(g.MenuItems, NewUseItemMenuItem(playerItem))
 		}
 		g.MenuItems = append(g.MenuItems, NewDropItemMenuItem(playerItem))
+	}
+
+	if len(g.MenuItems) > 10 {
+		panic("menu too large - more than 10 menu items not supported")
 	}
 }
 

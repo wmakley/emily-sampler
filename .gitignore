@@ -11,8 +11,8 @@ if
 sdl_main
 /todos/api/todos
 /go/main
+/go/go-plunger/go-plunger
 *.o
-go-plunger
 
 # build directories
 build
