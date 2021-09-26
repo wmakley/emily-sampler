@@ -55,7 +55,7 @@ func (g *Game) Start() {
 			g.DescribeRoom()
 		}
 		if g.RoomChanged || g.RoomInventoryChanged {
-			g.ListRoomObjects()
+			g.ListItemsInRoom()
 		}
 		g.RebuildMenu()
 		g.PrintMenu()
@@ -184,7 +184,7 @@ func (g *Game) DescribeRoom() {
 	fmt.Println(g.CurrentRoom.Description(g))
 }
 
-func (g *Game) ListRoomObjects() {
+func (g *Game) ListItemsInRoom() {
 	objects := g.CurrentRoom.Inventory().Items
 	if len(objects) > 0 {
 		fmt.Print("\nObjects:\n\n")
@@ -192,32 +192,6 @@ func (g *Game) ListRoomObjects() {
 		for _, obj := range objects {
 			fmt.Printf("  * %s\n", obj.Name())
 		}
-	}
-}
-
-type GenericMenuItem struct {
-	desc   string
-	action func(g *Game)
-}
-
-func (m GenericMenuItem) Description() string {
-	return m.desc
-}
-
-func (m GenericMenuItem) Action() func(g *Game) {
-	return m.action
-}
-
-func NewWalkToRoomMenuItem(room Room) MenuItem {
-	if room == nil {
-		panic("room may not be nil")
-	}
-
-	return &GenericMenuItem{
-		desc: fmt.Sprintf("Walk to %s", room.Name()),
-		action: func(g *Game) {
-			g.WalkToRoom(room)
-		},
 	}
 }
 
@@ -233,31 +207,4 @@ func (g *Game) DropItem(itemToDrop Item) {
 	g.CurrentRoom.Inventory().AddItem(item)
 	fmt.Printf("Dropped %s.\nYou no longer have a %s.\n", item.Name(), item.Name())
 	g.RoomInventoryChanged = true
-}
-
-func NewPickupItemMenuItem(item Item) MenuItem {
-	return &GenericMenuItem{
-		desc: fmt.Sprintf("Pick up %s", item.Name()),
-		action: func(g *Game) {
-			g.PickupItem(item)
-		},
-	}
-}
-
-func NewDropItemMenuItem(item Item) MenuItem {
-	return &GenericMenuItem{
-		desc: fmt.Sprintf("Drop %s", item.Name()),
-		action: func(g *Game) {
-			g.DropItem(item)
-		},
-	}
-}
-
-func NewUseItemMenuItem(item Item) MenuItem {
-	return &GenericMenuItem{
-		desc: fmt.Sprintf("Use %s", item.Name()),
-		action: func(g *Game) {
-			item.Use(g)
-		},
-	}
 }
