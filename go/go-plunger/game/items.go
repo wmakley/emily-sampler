@@ -41,23 +41,25 @@ func (p Plunger) Usable(g *Game) bool {
 	case Bathroom:
 		return true
 	case Kitchen:
-		return !g.Flag(FlagRatRemoved)
+		return g.CurrentRoom.HasActiveScenery(SceneryRatEatingCrumbsID)
 	}
 	return false
 }
 
 func (p *Plunger) Use(g *Game) {
-	if g.CurrentRoom == Kitchen {
-		if g.Flag(FlagRatRemoved) {
+	room := g.CurrentRoom
+	if room == Kitchen {
+		if !room.HasActiveScenery(SceneryRatEatingCrumbsID) {
 			panic("rat already removed")
 		}
 
-		g.SetFlag(FlagRatRemoved, true)
+		room.DeactivateScenery(SceneryRatEatingCrumbsID)
 
 		g.Player.Inventory.RemoveItem(p)
 		g.Player.Inventory.AddItem(NewPlungerWithRat())
 		fmt.Println("You suction the rat in your plunger.\nYou are carrying a plunger with a rat in it.")
-	} else if g.CurrentRoom == Bathroom {
+		g.RoomSceneryChanged = true
+	} else if room == Bathroom {
 		fmt.Println("You plunge the toilet, even though it doesn't need it.")
 	}
 }
@@ -96,5 +98,8 @@ func (p *PlungerWithRat) Use(g *Game) {
 	g.Player.Inventory.AddItem(plunger)
 	fmt.Printf("You now have a %s.\n", plunger.Name())
 
+	g.CurrentRoom.ActivateScenery(SceneryTurkeyID)
+	g.CurrentRoom.ActivateScenery(SceneryOliverID)
+	g.RoomSceneryChanged = true
 	g.RoomInventoryChanged = true
 }

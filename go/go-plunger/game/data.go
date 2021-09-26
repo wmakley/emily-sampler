@@ -1,15 +1,12 @@
 package goplunger
 
-const (
-	FlagRatRemoved = iota
-)
-
 type Game struct {
 	Rooms []Room
 	Player
 	CurrentRoom          Room
 	MenuItems            []MenuItem
 	RoomChanged          bool
+	RoomSceneryChanged   bool
 	RoomInventoryChanged bool
 	Flags                map[int]bool
 }
@@ -25,6 +22,17 @@ type Room interface {
 	Links() []Room
 	AddLink(link Room)
 	Inventory() *Inventory
+	Scenery() []Scenery
+	AddScenery(scenery Scenery)
+	HasActiveScenery(id int) bool
+	ActivateScenery(id int)
+	DeactivateScenery(id int)
+}
+
+type Scenery struct {
+	ID          int
+	Active      bool
+	Description string
 }
 
 type MenuItem struct {

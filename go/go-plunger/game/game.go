@@ -8,8 +8,14 @@ import (
 	"strings"
 )
 
+const (
+	SceneryRatEatingCrumbsID = iota
+	SceneryTurkeyID
+	SceneryOliverID
+)
+
 var (
-	Kitchen    = NewKitchen(2)
+	Kitchen    = NewSimpleRoom("Kitchen", "It is very grungy, and there are crumbs all over the stove.", 2)
 	Bathroom   = NewSimpleRoom("Bathroom", "It is reasonably clean.", 2)
 	LivingRoom = NewSimpleRoom("Living Room", "You are standing near the coffee table.\nIt is cluttered.\nYou can see the kitchen, bathroom, and back deck.", 3)
 	BackDeck   = NewSimpleRoom("Back Deck", "You are standing just outside of the sliding door.\nIt is sunny and beautiful.", 1)
@@ -21,6 +27,11 @@ func NewGame() *Game {
 	}
 	Kitchen.AddLink(Bathroom)
 	Kitchen.AddLink(LivingRoom)
+	Kitchen.AddScenery(Scenery{
+		ID: SceneryRatEatingCrumbsID,
+		Active: true,
+		Description: "a large rat eating the crumbs",
+	})
 
 	Bathroom.AddLink(Kitchen)
 	Bathroom.AddLink(LivingRoom)
@@ -30,6 +41,16 @@ func NewGame() *Game {
 	LivingRoom.AddLink(BackDeck)
 
 	BackDeck.AddLink(LivingRoom)
+	BackDeck.AddScenery(Scenery{
+		ID:          SceneryTurkeyID,
+		Active:      false,
+		Description: "a large turkey tom with prominent wattle staring at you",
+	})
+	BackDeck.AddScenery(Scenery{
+		ID:          SceneryOliverID,
+		Active:      false,
+		Description: "a cat named Oliver",
+	})
 
 	plunger := NewPlunger()
 	Bathroom.Inventory().AddItem(plunger)
@@ -53,6 +74,9 @@ func (g *Game) Start() {
 	for !done {
 		if g.RoomChanged {
 			g.DescribeRoom()
+		}
+		if g.RoomChanged || g.RoomSceneryChanged {
+			g.DescribeScenery()
 		}
 		if g.RoomChanged || g.RoomInventoryChanged {
 			g.ListItemsInRoom()
@@ -141,6 +165,7 @@ func (g Game) PrintMenu() {
 
 func (g *Game) ResetTemporaryFlags() {
 	g.RoomChanged = false
+	g.RoomSceneryChanged = false
 	g.RoomInventoryChanged = false
 }
 
@@ -180,8 +205,17 @@ func (g *Game) WalkToRoom(room Room) {
 }
 
 func (g *Game) DescribeRoom() {
-	fmt.Printf("You are in the %s.\n", g.CurrentRoom.Name())
-	fmt.Println(g.CurrentRoom.Description(g))
+	room := g.CurrentRoom
+	fmt.Printf("You are in the %s.\n", room.Name())
+	fmt.Println(room.Description(g))
+}
+
+func (g *Game) DescribeScenery() {
+	for _, scenery := range g.CurrentRoom.Scenery() {
+		if scenery.Active {
+			fmt.Printf("There is %s.\n", scenery.Description)
+		}
+	}
 }
 
 func (g *Game) ListItemsInRoom() {
