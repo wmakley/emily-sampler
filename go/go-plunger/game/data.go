@@ -27,13 +27,14 @@ type Room interface {
 	Inventory() *Inventory
 }
 
-type MenuItem interface {
-	Description() string
-	Action() func(g *Game)
+type MenuItem struct {
+	Description string
+	Action      func(g *Game)
 }
 
 type Item interface {
 	Name() string
+	// Usable determines if a "Use" menu item will be available
 	Usable(g *Game) bool
 	Use(g *Game)
 }

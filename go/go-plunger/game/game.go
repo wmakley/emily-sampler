@@ -133,7 +133,7 @@ func (g Game) PrintMenu() {
 	fmt.Print("\nOptions:\n\n")
 
 	for i, item := range g.MenuItems {
-		fmt.Printf("  (%d): %s\n", i+1, item.Description())
+		fmt.Printf("  (%d): %s\n", i+1, item.Description)
 	}
 
 	fmt.Println("  (q): Quit Game")
@@ -166,7 +166,7 @@ func (g *Game) ExecuteMenuItem(index int) error {
 	}
 
 	menuItem := g.MenuItems[index]
-	menuItem.Action()(g)
+	menuItem.Action(g)
 
 	return nil
 }
