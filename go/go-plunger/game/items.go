@@ -18,6 +18,14 @@ func (o SimpleItem) Use(g *Game) {
 	fmt.Println("That doesn't seem to do anything here.")
 }
 
+func (o SimpleItem) OnPickup(g *Game) {
+	fmt.Printf("Picked up %s.\nYou now have a %s.\n", o.name, o.name)
+}
+
+func (o SimpleItem) OnDrop(g *Game) {
+	fmt.Printf("Dropped %s.\nYou no longer have a %s.\n", o.name, o.name)
+}
+
 func NewSimpleItem(name string) Item {
 	return &SimpleItem{
 		name: name,
@@ -81,13 +89,14 @@ func (p PlungerWithRat) Usable(g *Game) bool {
 }
 
 func (p *PlungerWithRat) Use(g *Game) {
-	if g.CurrentRoom != BackDeck {
+	room := g.CurrentRoom
+	if room != BackDeck {
 		panic("may only be used on BackDeck")
 	}
 
 	g.Player.Inventory.RemoveItem(p)
-	sunBathingRat := NewSimpleItem("Sun-bathing rat")
-	g.CurrentRoom.Inventory().AddItem(sunBathingRat)
+	sunBathingRat := NewSimpleItem("sun-bathing rat")
+	room.Inventory().AddItem(sunBathingRat)
 
 	fmt.Printf(
 		"You release the rat. It is now sun-bathing on the back deck.\nYou no longer have a %s.\n",
@@ -98,8 +107,29 @@ func (p *PlungerWithRat) Use(g *Game) {
 	g.Player.Inventory.AddItem(plunger)
 	fmt.Printf("You now have a %s.\n", plunger.Name())
 
-	g.CurrentRoom.ActivateScenery(SceneryTurkeyID)
-	g.CurrentRoom.ActivateScenery(SceneryOliverID)
-	g.RoomSceneryChanged = true
+	room.Inventory().AddItem(NewOliver())
+	room.Inventory().AddItem(NewSimpleItem("large turkey tom"))
+	fmt.Printf("\nA large turkey tom has appeared!\nOliver has appeared!\n")
+
 	g.RoomInventoryChanged = true
+}
+
+type Oliver struct {
+	SimpleItem
+}
+
+func NewOliver() Item {
+	return &Oliver{
+		SimpleItem{
+			name: "cat named Oliver",
+		},
+	}
+}
+
+func (o Oliver)OnPickup(g *Game) {
+	fmt.Println("You pick up Oliver. He is purring.")
+}
+
+func (o Oliver)OnDrop(g *Game) {
+	fmt.Println("You release Oliver.\nHe leaps from your arms in a graceful arc.")
 }

@@ -45,4 +45,6 @@ type Item interface {
 	// Usable determines if a "Use" menu item will be available
 	Usable(g *Game) bool
 	Use(g *Game)
+	OnPickup(g *Game)
+	OnDrop(g *Game)
 }

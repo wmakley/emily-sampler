@@ -232,13 +232,13 @@ func (g *Game) ListItemsInRoom() {
 func (g *Game) PickupItem(itemToPickUp Item) {
 	item := g.CurrentRoom.Inventory().RemoveItem(itemToPickUp)
 	g.Player.Inventory.AddItem(item)
-	fmt.Printf("Picked up %s.\nYou now have a %s.\n", item.Name(), item.Name())
+	item.OnPickup(g)
 	g.RoomInventoryChanged = true
 }
 
 func (g *Game) DropItem(itemToDrop Item) {
 	item := g.Player.Inventory.RemoveItem(itemToDrop)
 	g.CurrentRoom.Inventory().AddItem(item)
-	fmt.Printf("Dropped %s.\nYou no longer have a %s.\n", item.Name(), item.Name())
+	item.OnDrop(g)
 	g.RoomInventoryChanged = true
 }
