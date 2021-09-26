@@ -19,7 +19,7 @@ Game::Game()
           std::make_shared<Plunger>()});
 
   rooms_[LIVING_ROOM] = std::make_shared<Room>(
-      LIVING_ROOM, "Living Room", "You are standing near the coffee table.\nIt is cluttered.\nYou can see the kitchen, bathroom, and back door.",
+      LIVING_ROOM, "Living Room", "You are standing near the coffee table.\nIt is cluttered.\nYou can see the kitchen, bathroom, and back deck.",
       std::initializer_list<RoomId>{
           BACK_DECK,
           BATHROOM,
