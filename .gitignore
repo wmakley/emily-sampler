@@ -12,6 +12,7 @@ sdl_main
 /todos/api/todos
 /go/main
 *.o
+go-plunger
 
 # build directories
 build
