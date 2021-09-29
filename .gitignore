@@ -3,6 +3,7 @@ Thumbs.db
 
 # Editors
 .vscode
+.idea
 
 # Built binaries
 curses
@@ -10,6 +11,8 @@ hello_world
 if
 sdl_main
 /todos/api/todos
+/go/main
+/go/go-plunger/go-plunger
 *.o
 
 # build directories
